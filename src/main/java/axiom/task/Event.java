@@ -1,4 +1,8 @@
+package axiom.task;
+
 import java.time.LocalDateTime;
+
+import axiom.parser.DateTimeParser;
 
 /**
  * Represents an event task with a start and end date or time.
@@ -12,6 +16,14 @@ public class Event extends Task {
         super(description);
         this.from = from;
         this.to = to;
+    }
+
+    public LocalDateTime getFrom() {
+        return from;
+    }
+
+    public LocalDateTime getTo() {
+        return to;
     }
 
     @Override

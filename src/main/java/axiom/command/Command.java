@@ -1,3 +1,5 @@
+package axiom.command;
+
 /**
  * Represents the commands supported by the AXIOM chatbot.
  */

@@ -4,7 +4,7 @@ This file defines automated UI tests for the AXIOM chatbot. Each test case runs 
 interactive session: inputs are piped to the program, and the complete stdout is compared
 against the expected output.
 
-**Run command:** `java src/main/java/Axiom.java`
+**Run command:** `java src/main/java/axiom/Axiom.java`
 
 **Test runner:** `python3 test/run-ui-tests.py`
 

@@ -1,3 +1,12 @@
+package axiom;
+
+import axiom.command.Command;
+import axiom.parser.Parser;
+import axiom.storage.Storage;
+import axiom.task.Task;
+import axiom.task.TaskList;
+import axiom.ui.Ui;
+
 /**
  * Entry point for the AXIOM chatbot.
  */

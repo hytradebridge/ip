@@ -1,3 +1,5 @@
+package axiom;
+
 /**
  * Represents an error specific to the AXIOM chatbot.
  */

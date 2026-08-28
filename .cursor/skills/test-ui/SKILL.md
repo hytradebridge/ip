@@ -66,7 +66,7 @@ Rules:
 - Always end inputs with `bye` unless testing mid-session interruption.
 - Capture expected output by running the program manually when unsure:
   ```bash
-  printf 'your\ncommands\nbye\n' | java src/main/java/Axiom.java
+  printf 'your\ncommands\nbye\n' | java src/main/java/axiom/Axiom.java
   ```
 
 ## Failure handling
@@ -95,7 +95,7 @@ When output changes intentionally (e.g. new greeting), update **Expected output*
 The test plan header defines the run command:
 
 ```markdown
-**Run command:** `java src/main/java/Axiom.java`
+**Run command:** `java src/main/java/axiom/Axiom.java`
 ```
 
 If the entry point changes, update this line in `test/ui-test-plan.md` only — the runner reads it from there.

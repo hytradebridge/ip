@@ -1,8 +1,18 @@
+package axiom.storage;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import axiom.AxiomException;
+import axiom.parser.DateTimeParser;
+import axiom.task.Deadline;
+import axiom.task.Event;
+import axiom.task.Task;
+import axiom.task.TaskList;
+import axiom.task.Todo;
 
 /**
  * Loads and saves tasks to a file on disk using OS-independent relative paths.
@@ -139,18 +149,18 @@ public class Storage {
     }
 
     private String formatTask(Task task) {
-        String status = task.isDone ? "1" : "0";
+        String status = task.isDone() ? "1" : "0";
         if (task instanceof Todo) {
-            return "T | " + status + " | " + task.description;
+            return "T | " + status + " | " + task.getDescription();
         }
         if (task instanceof Deadline deadline) {
-            return "D | " + status + " | " + task.description + " | "
-                    + DateTimeParser.formatStored(deadline.by);
+            return "D | " + status + " | " + task.getDescription() + " | "
+                    + DateTimeParser.formatStored(deadline.getBy());
         }
         if (task instanceof Event event) {
-            return "E | " + status + " | " + task.description + " | "
-                    + DateTimeParser.formatStored(event.from) + " to "
-                    + DateTimeParser.formatStored(event.to);
+            return "E | " + status + " | " + task.getDescription() + " | "
+                    + DateTimeParser.formatStored(event.getFrom()) + " to "
+                    + DateTimeParser.formatStored(event.getTo());
         }
         throw new IllegalArgumentException("Unknown task type: " + task.getClass().getName());
     }

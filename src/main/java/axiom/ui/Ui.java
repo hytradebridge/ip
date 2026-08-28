@@ -1,4 +1,9 @@
+package axiom.ui;
+
 import java.util.Scanner;
+
+import axiom.task.Task;
+import axiom.task.TaskList;
 
 /**
  * Handles interactions with the user.
