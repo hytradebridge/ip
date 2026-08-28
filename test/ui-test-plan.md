@@ -525,3 +525,319 @@ ____________________________________________________________
 ____________________________________________________________
 
 ```
+
+## Test Case 14: Save todo to file
+
+**Aim:** Verify that adding and marking a todo saves the task list to `data/axiom.txt`.
+
+**Inputs:**
+```
+todo read book
+mark 1
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+T | 1 | read book
+
+```
+
+## Test Case 15: Save after add, mark, and delete
+
+**Aim:** Verify that the data file reflects the final task list after multiple changes.
+
+**Inputs:**
+```
+todo read book
+deadline return book /by Sunday
+event project meeting /from Mon 2pm /to 4pm
+mark 1
+delete 3
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Sunday)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+T | 1 | read book
+D | 0 | return book | Sunday
+
+```
+
+## Test Case 16: Load tasks from file on startup
+
+**Aim:** Verify that tasks are loaded from `data/axiom.txt` when the chatbot starts.
+
+**Initial file:** `data/axiom.txt`
+```
+T | 1 | read book
+D | 0 | return book | Sunday
+E | 0 | project meeting | Mon 2pm to 4pm
+
+```
+
+**Inputs:**
+```
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: Sunday)
+ 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 17: Load then add task
+
+**Aim:** Verify that a loaded task list can be extended and saved back to disk.
+
+**Initial file:** `data/axiom.txt`
+```
+T | 0 | read book
+
+```
+
+**Inputs:**
+```
+todo return book
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] return book
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[T][ ] return book
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+T | 0 | read book
+T | 0 | return book
+
+```
+
+## Test Case 18: First run with no data folder
+
+**Aim:** Verify that the chatbot starts with an empty task list when neither `data/` nor `data/axiom.txt` exists.
+
+**Inputs:**
+```
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 19: Recover from corrupt storage file
+
+**Aim:** Verify that a corrupt data file shows an error on startup but the chatbot can still accept new tasks.
+
+**Initial file:** `data/axiom.txt`
+```
+T | 1 | read book
+BAD LINE
+
+```
+
+**Inputs:**
+```
+todo borrow book
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+ Problem in data/axiom.txt at line 2: expected format TYPE | STATUS | DESCRIPTION.
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] borrow book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+T | 0 | borrow book
+
+```
+
+## Test Case 20: Create data folder on first save
+
+**Aim:** Verify that adding the first task creates `data/` and `data/axiom.txt` when they do not exist yet.
+
+**Inputs:**
+```
+todo read book
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+T | 0 | read book
+
+```
