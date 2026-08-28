@@ -77,6 +77,9 @@ public class Axiom {
         case LIST:
             ui.showTaskList(tasks);
             break;
+        case FIND:
+            findTasks(input);
+            break;
         case MARK:
             markTask(input);
             break;
@@ -99,6 +102,17 @@ public class Axiom {
             throw new AxiomException("Sorry, I don't understand that command.");
         }
         return false;
+    }
+
+    /**
+     * Finds and displays tasks matching a keyword in their description.
+     *
+     * @param input Full {@code find} command line.
+     * @throws AxiomException If the keyword is missing.
+     */
+    private void findTasks(String input) throws AxiomException {
+        String keyword = parser.parseFindKeyword(input);
+        ui.showMatchingTasks(tasks, tasks.findMatchingTaskNumbers(keyword));
     }
 
     /**

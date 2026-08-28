@@ -81,6 +81,23 @@ public class TaskList {
     }
 
     /**
+     * Returns the one-based indices of tasks whose description contains the keyword.
+     *
+     * @param keyword Keyword to search for (case-insensitive).
+     * @return One-based task numbers of matching tasks, in list order.
+     */
+    public ArrayList<Integer> findMatchingTaskNumbers(String keyword) {
+        ArrayList<Integer> matchingNumbers = new ArrayList<>();
+        String lowerKeyword = keyword.toLowerCase();
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword)) {
+                matchingNumbers.add(i + 1);
+            }
+        }
+        return matchingNumbers;
+    }
+
+    /**
      * Marks the task at the given index as not done.
      *
      * @param index Zero-based index of the task.

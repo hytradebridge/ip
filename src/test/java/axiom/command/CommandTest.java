@@ -10,6 +10,7 @@ class CommandTest {
     void fromInput_exactKeyword_returnsCommand() {
         assertEquals(Command.BYE, Command.fromInput("bye"));
         assertEquals(Command.LIST, Command.fromInput("list"));
+        assertEquals(Command.FIND, Command.fromInput("find"));
         assertEquals(Command.MARK, Command.fromInput("mark"));
         assertEquals(Command.UNMARK, Command.fromInput("unmark"));
         assertEquals(Command.DELETE, Command.fromInput("delete"));

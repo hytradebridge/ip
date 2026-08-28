@@ -132,4 +132,19 @@ public class Parser {
         }
         return new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to));
     }
+
+    /**
+     * Returns the keyword to search for in a {@code find} command.
+     *
+     * @param input Full {@code find} command line.
+     * @return The keyword to search for.
+     * @throws AxiomException If the keyword is missing.
+     */
+    public String parseFindKeyword(String input) throws AxiomException {
+        String keyword = Command.FIND.getArgument(input);
+        if (keyword.isEmpty()) {
+            throw new AxiomException("A find needs a keyword. Usage: find <keyword>");
+        }
+        return keyword;
+    }
 }

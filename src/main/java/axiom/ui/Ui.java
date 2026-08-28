@@ -1,5 +1,6 @@
 package axiom.ui;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import axiom.task.Task;
@@ -76,6 +77,19 @@ public class Ui {
         System.out.println(" Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println(" " + (i + 1) + "." + tasks.get(i));
+        }
+    }
+
+    /**
+     * Displays tasks whose descriptions match the search keyword.
+     *
+     * @param tasks Task list to search.
+     * @param matchingNumbers One-based indices of matching tasks.
+     */
+    public void showMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
+        System.out.println(" Here are the matching tasks in your list:");
+        for (int number : matchingNumbers) {
+            System.out.println(" " + number + "." + tasks.get(number - 1));
         }
     }
 

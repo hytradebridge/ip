@@ -6,6 +6,7 @@ package axiom.command;
 public enum Command {
     BYE("bye"),
     LIST("list"),
+    FIND("find"),
     MARK("mark"),
     UNMARK("unmark"),
     DELETE("delete"),

@@ -183,4 +183,17 @@ class ParserTest {
                         + "Usage: event <description> /from <start> /to <end>",
                 exception.getMessage());
     }
+
+    @Test
+    void parseFindKeyword_validInput_returnsKeyword() throws AxiomException {
+        assertEquals("book", parser.parseFindKeyword("find book"));
+    }
+
+    @Test
+    void parseFindKeyword_emptyKeyword_exceptionThrown() {
+        AxiomException exception = assertThrows(AxiomException.class,
+                () -> parser.parseFindKeyword("find"));
+        assertEquals("A find needs a keyword. Usage: find <keyword>",
+                exception.getMessage());
+    }
 }

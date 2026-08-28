@@ -78,4 +78,29 @@ class TaskListTest {
         assertEquals(1, loadedList.size());
         assertEquals(firstTask, loadedList.get(0));
     }
+
+    @Test
+    void findMatchingTaskNumbers_matchingKeyword_returnsOriginalTaskNumbers() {
+        taskList.add(firstTask);
+        taskList.add(new Todo("buy bread"));
+        taskList.add(secondTask);
+        ArrayList<Integer> matches = taskList.findMatchingTaskNumbers("book");
+        assertEquals(2, matches.size());
+        assertEquals(1, matches.get(0));
+        assertEquals(3, matches.get(1));
+    }
+
+    @Test
+    void findMatchingTaskNumbers_caseInsensitive_returnsMatches() {
+        taskList.add(new Todo("Read Book"));
+        ArrayList<Integer> matches = taskList.findMatchingTaskNumbers("book");
+        assertEquals(1, matches.size());
+        assertEquals(1, matches.get(0));
+    }
+
+    @Test
+    void findMatchingTaskNumbers_noMatch_returnsEmptyList() {
+        taskList.add(firstTask);
+        assertTrue(taskList.findMatchingTaskNumbers("xyz").isEmpty());
+    }
 }
