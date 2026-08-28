@@ -82,8 +82,8 @@ ____________________________________________________________
 **Inputs:**
 ```
 todo read book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
 list
 bye
 ```
@@ -106,19 +106,19 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
-   [D][ ] return book (by: Sunday)
+   [D][ ] return book (by: Jun 06 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
  Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] read book
- 2.[D][ ] return book (by: Sunday)
- 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[D][ ] return book (by: Jun 06 2019)
+ 3.[E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
 ____________________________________________________________
 ____________________________________________________________
  Bye. Hope to see you again soon!
@@ -126,14 +126,13 @@ ____________________________________________________________
 
 ```
 
-## Test Case 4: Deadline with arbitrary by string
+## Test Case 4: Invalid deadline date
 
-**Aim:** Verify that the `/by` value is stored as a plain string without parsing.
+**Aim:** Verify that an unparseable `/by` value is rejected with a helpful error message.
 
 **Inputs:**
 ```
 deadline do homework /by no idea :-p
-list
 bye
 ```
 
@@ -149,13 +148,7 @@ Hello! I'm AXIOM.
 What can I do for you?
 ____________________________________________________________
 ____________________________________________________________
- Got it. I've added this task:
-   [D][ ] do homework (by: no idea :-p)
- Now you have 1 tasks in the list.
-____________________________________________________________
-____________________________________________________________
- Here are the tasks in your list:
- 1.[D][ ] do homework (by: no idea :-p)
+ Invalid date/time format: 'no idea :-p'. Use yyyy-MM-dd or d/M/yyyy HHmm.
 ____________________________________________________________
 ____________________________________________________________
  Bye. Hope to see you again soon!
@@ -441,7 +434,7 @@ ____________________________________________________________
 ```
 todo read book
 todo return book
-event project meeting /from Aug 6th 2pm /to 4pm
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
 todo borrow book
 delete 3
 list
@@ -471,7 +464,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
  Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -481,7 +474,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Noted. I've removed this task:
-   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
  Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -576,8 +569,8 @@ T | 1 | read book
 **Inputs:**
 ```
 todo read book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
 mark 1
 delete 3
 bye
@@ -601,12 +594,12 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
-   [D][ ] return book (by: Sunday)
+   [D][ ] return book (by: Jun 06 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
  Now you have 3 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -615,7 +608,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Noted. I've removed this task:
-   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -627,7 +620,7 @@ ____________________________________________________________
 **Expected file:** `data/axiom.txt`
 ```
 T | 1 | read book
-D | 0 | return book | Sunday
+D | 0 | return book | 2019-06-06T00:00
 
 ```
 
@@ -638,8 +631,8 @@ D | 0 | return book | Sunday
 **Initial file:** `data/axiom.txt`
 ```
 T | 1 | read book
-D | 0 | return book | Sunday
-E | 0 | project meeting | Mon 2pm to 4pm
+D | 0 | return book | 2019-06-06T00:00
+E | 0 | project meeting | 2019-08-06T14:00 to 2019-08-06T16:00
 
 ```
 
@@ -663,8 +656,8 @@ ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][X] read book
- 2.[D][ ] return book (by: Sunday)
- 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[D][ ] return book (by: Jun 06 2019)
+ 3.[E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
 ____________________________________________________________
 ____________________________________________________________
  Bye. Hope to see you again soon!
@@ -839,5 +832,48 @@ ____________________________________________________________
 **Expected file:** `data/axiom.txt`
 ```
 T | 0 | read book
+
+```
+
+## Test Case 21: Parse d/M/yyyy HHmm deadline
+
+**Aim:** Verify that `deadline ... /by d/M/yyyy HHmm` is parsed as a date and time and displayed in readable format.
+
+**Inputs:**
+```
+deadline return book /by 2/12/2019 1800
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Dec 02 2019, 6:00 PM)
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Dec 02 2019, 6:00 PM)
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+D | 0 | return book | 2019-12-02T18:00
 
 ```
