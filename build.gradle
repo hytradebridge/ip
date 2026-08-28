@@ -40,15 +40,19 @@ application {
     mainClass = 'axiom.Axiom'
 }
 
+// The plain jar task is disabled; shadowJar produces the distributable fat JAR instead.
 jar {
-    // A lean JAR file (i.e., without the dependencies packaged inside) is not needed.
     enabled = false
-    // Rename its output anyway; Gradle forbids it clashing with the shadowJar output file, even for a disabled task.
     archiveClassifier = 'without-dependencies'
 }
 
 shadowJar {
     archiveFileName = 'axiom.jar'
+    manifest {
+        attributes(
+            'Main-Class': application.mainClass
+        )
+    }
 }
 
 run {

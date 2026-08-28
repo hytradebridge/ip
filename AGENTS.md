@@ -28,6 +28,15 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
+## Gradle and fat JAR
+
+* Run the app from source: `./gradlew run`
+* Build the fat JAR: `./gradlew shadowJar` → output at `build/libs/axiom.jar`
+* Run the fat JAR: `java -jar build/libs/axiom.jar`
+* Run unit tests: `./gradlew test`
+
+`build.gradle` uses the Shadow plugin (`com.gradleup.shadow`) with `application.mainClass = 'axiom.Axiom'`. The plain `jar` task is disabled; `shadowJar` is the distributable artifact.
+
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.

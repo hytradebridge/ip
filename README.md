@@ -23,3 +23,39 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Building and running with Gradle
+
+Prerequisites: JDK 25. On macOS: `sdk use java 25.0.3.fx-zulu`
+
+### Run from source
+
+```bash
+./gradlew run
+```
+
+### Create a fat JAR
+
+The [Shadow plugin](https://github.com/GradleUp/shadow) packages the application and its dependencies into one runnable JAR:
+
+```bash
+./gradlew shadowJar
+```
+
+The fat JAR is written to:
+
+```
+build/libs/axiom.jar
+```
+
+### Run the fat JAR
+
+```bash
+java -jar build/libs/axiom.jar
+```
+
+### Run tests
+
+```bash
+./gradlew test
+```
