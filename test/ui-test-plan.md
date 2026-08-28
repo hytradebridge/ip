@@ -230,3 +230,205 @@ ____________________________________________________________
 ____________________________________________________________
 
 ```
+
+## Test Case 6: Empty todo description
+
+**Aim:** Verify that `todo` without a description shows an error and does not add a task.
+
+**Inputs:**
+```
+todo
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ A todo needs a description. Usage: todo <description>
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 7: Unknown command
+
+**Aim:** Verify that an unrecognised command shows an error message.
+
+**Inputs:**
+```
+blah
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Sorry, I don't understand that command.
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 8: Deadline missing /by
+
+**Aim:** Verify that a deadline without `/by` is rejected with a helpful message.
+
+**Inputs:**
+```
+deadline homework
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ A deadline must include /by. Usage: deadline <description> /by <time>
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 9: Invalid mark command
+
+**Aim:** Verify that `mark` without a number and `mark` with an out-of-range number both produce errors.
+
+**Inputs:**
+```
+mark
+mark 99
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Please specify which task to mark. Usage: mark <task number>
+____________________________________________________________
+____________________________________________________________
+ That task number isn't in your list. You currently have 0 task(s).
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 10: Continue after error
+
+**Aim:** Verify that the chatbot keeps running after an error and still accepts valid commands.
+
+**Inputs:**
+```
+todo read book
+blah
+todo return book
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Sorry, I don't understand that command.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] return book
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[T][ ] return book
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 11: Event missing /to
+
+**Aim:** Verify that an event without `/to` is rejected with a helpful message.
+
+**Inputs:**
+```
+event meeting /from 2pm
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ An event must include /from and /to. Usage: event <description> /from <start> /to <end>
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
