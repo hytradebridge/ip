@@ -432,3 +432,96 @@ ____________________________________________________________
 ____________________________________________________________
 
 ```
+
+## Test Case 12: Delete task
+
+**Aim:** Verify that `delete N` removes the specified task and updates the remaining list.
+
+**Inputs:**
+```
+todo read book
+todo return book
+event project meeting /from Aug 6th 2pm /to 4pm
+todo borrow book
+delete 3
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] return book
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] borrow book
+ Now you have 4 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+ 2.[T][ ] return book
+ 3.[T][ ] borrow book
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+## Test Case 13: Delete without task number
+
+**Aim:** Verify that `delete` without a number shows an error message.
+
+**Inputs:**
+```
+delete
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Please specify which task to delete. Usage: delete <task number>
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
