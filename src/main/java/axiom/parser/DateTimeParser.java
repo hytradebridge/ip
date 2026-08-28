@@ -11,6 +11,7 @@ import axiom.AxiomException;
 
 /**
  * Parses user date/time input and formats stored dates for display.
+ * This class is not instantiable.
  */
 public class DateTimeParser {
     private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
@@ -33,7 +34,11 @@ public class DateTimeParser {
     }
 
     /**
-     * Parses a date/time string into a {@link LocalDateTime}.
+     * Parses a date/time string from user input into a {@link LocalDateTime}.
+     *
+     * @param input Date/time text supplied by the user.
+     * @return The parsed date and time.
+     * @throws AxiomException If the input does not match any supported format.
      */
     public static LocalDateTime parse(String input) throws AxiomException {
         String trimmed = input.trim();
@@ -60,6 +65,10 @@ public class DateTimeParser {
 
     /**
      * Parses a date/time string stored in the data file.
+     *
+     * @param input ISO-8601 date/time text from the data file.
+     * @return The parsed date and time.
+     * @throws AxiomException If the stored value is not valid ISO-8601.
      */
     public static LocalDateTime parseStored(String input) throws AxiomException {
         try {
@@ -71,6 +80,9 @@ public class DateTimeParser {
 
     /**
      * Formats a date/time for display to the user.
+     *
+     * @param dateTime Date and time to format.
+     * @return A human-readable date or date-time string.
      */
     public static String format(LocalDateTime dateTime) {
         if (dateTime.getHour() == 0 && dateTime.getMinute() == 0) {
@@ -81,6 +93,9 @@ public class DateTimeParser {
 
     /**
      * Formats a date/time for storage in the data file.
+     *
+     * @param dateTime Date and time to format.
+     * @return An ISO-8601 string suitable for persistence.
      */
     public static String formatStored(LocalDateTime dateTime) {
         return dateTime.toString();

@@ -12,10 +12,25 @@ import axiom.task.Todo;
  */
 public class Parser {
 
+    /**
+     * Identifies the command in a line of user input.
+     *
+     * @param input Full command line from the user.
+     * @return The matching {@link Command}.
+     */
     public Command getCommand(String input) {
         return Command.fromInput(input);
     }
 
+    /**
+     * Extracts and validates a one-based task number from a command.
+     *
+     * @param command Command being executed (e.g. {@link Command#MARK}).
+     * @param input Full command line from the user.
+     * @param taskCount Number of tasks currently in the list.
+     * @return The validated one-based task number.
+     * @throws AxiomException If the argument is missing, non-numeric, or out of range.
+     */
     public int parseTaskNumber(Command command, String input, int taskCount) throws AxiomException {
         String argument = command.getArgument(input);
         if (argument.isEmpty()) {
@@ -35,6 +50,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a {@code todo} command into a {@link Todo} task.
+     *
+     * @param input Full {@code todo} command line.
+     * @return The parsed todo task.
+     * @throws AxiomException If the description is missing.
+     */
     public Task parseTodo(String input) throws AxiomException {
         String description = Command.TODO.getArgument(input);
         if (description.isEmpty()) {
@@ -43,6 +65,13 @@ public class Parser {
         return new Todo(description);
     }
 
+    /**
+     * Parses a {@code deadline} command into a {@link Deadline} task.
+     *
+     * @param input Full {@code deadline} command line.
+     * @return The parsed deadline task.
+     * @throws AxiomException If the description or {@code /by} time is missing or invalid.
+     */
     public Task parseDeadline(String input) throws AxiomException {
         String remainder = Command.DEADLINE.getArgument(input);
         if (remainder.isEmpty()) {
@@ -67,6 +96,13 @@ public class Parser {
         return new Deadline(description, DateTimeParser.parse(by));
     }
 
+    /**
+     * Parses an {@code event} command into an {@link Event} task.
+     *
+     * @param input Full {@code event} command line.
+     * @return The parsed event task.
+     * @throws AxiomException If the description, {@code /from}, or {@code /to} time is missing or invalid.
+     */
     public Task parseEvent(String input) throws AxiomException {
         String remainder = Command.EVENT.getArgument(input);
         if (remainder.isEmpty()) {

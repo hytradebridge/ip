@@ -5,10 +5,20 @@ package axiom.task;
  */
 public class Todo extends Task {
 
+    /**
+     * Creates a new todo with the given description.
+     *
+     * @param description Description of the todo.
+     */
     public Todo(String description) {
         super(description);
     }
 
+    /**
+     * Returns a string representation with the {@code [T]} type prefix.
+     *
+     * @return Formatted todo string (e.g. {@code "[T][ ] read book"}).
+     */
     @Override
     public String toString() {
         return "[T]" + super.toString();

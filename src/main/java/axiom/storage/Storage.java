@@ -20,12 +20,20 @@ import axiom.task.Todo;
 public class Storage {
     private final Path filePath;
 
+    /**
+     * Creates a storage instance for the given file path.
+     *
+     * @param filePath Path to the task data file (e.g. {@code data/axiom.txt}).
+     */
     public Storage(String filePath) {
         this.filePath = Path.of(filePath);
     }
 
     /**
-     * Loads tasks from the data file. Returns an empty list when the file does not exist yet.
+     * Loads tasks from the data file.
+     *
+     * @return The loaded tasks, or an empty list when the file does not exist yet.
+     * @throws AxiomException If the file cannot be read or contains invalid data.
      */
     public ArrayList<Task> load() throws AxiomException {
         if (!Files.exists(filePath)) {
@@ -56,6 +64,9 @@ public class Storage {
 
     /**
      * Writes all tasks to the data file, creating parent folders if needed.
+     *
+     * @param tasks Task list to persist.
+     * @throws AxiomException If the file path is invalid or cannot be written.
      */
     public void save(TaskList tasks) throws AxiomException {
         ensureWritablePath();
@@ -74,10 +85,11 @@ public class Storage {
         }
     }
 
-    Path getFilePath() {
-        return filePath;
-    }
-
+    /**
+     * Verifies that the target path can be written to.
+     *
+     * @throws AxiomException If the parent path or file path is not writable.
+     */
     private void ensureWritablePath() throws AxiomException {
         Path parent = filePath.getParent();
         if (parent != null && Files.exists(parent) && !Files.isDirectory(parent)) {
@@ -88,6 +100,14 @@ public class Storage {
         }
     }
 
+    /**
+     * Parses a single line from the data file into a {@link Task}.
+     *
+     * @param line Text of the line to parse.
+     * @param lineNumber One-based line number, used in error messages.
+     * @return The parsed task.
+     * @throws AxiomException If the line format is invalid.
+     */
     private Task parseTask(String line, int lineNumber) throws AxiomException {
         String[] parts = line.split(" \\| ", -1);
         if (parts.length < 3) {
@@ -114,6 +134,16 @@ public class Storage {
         return task;
     }
 
+    /**
+     * Creates a task of the appropriate type from parsed file fields.
+     *
+     * @param type Task type code ({@code T}, {@code D}, or {@code E}).
+     * @param description Task description.
+     * @param parts All pipe-separated fields from the file line.
+     * @param lineNumber One-based line number, used in error messages.
+     * @return The created task (not yet marked done).
+     * @throws AxiomException If the type is unknown or required fields are missing.
+     */
     private Task createTask(String type, String description, String[] parts, int lineNumber)
             throws AxiomException {
         switch (type) {
@@ -144,10 +174,23 @@ public class Storage {
         }
     }
 
+    /**
+     * Builds an {@link AxiomException} for a corrupt data file line.
+     *
+     * @param lineNumber One-based line number of the error.
+     * @param details Short description of what went wrong.
+     * @return A formatted exception ready to throw.
+     */
     private AxiomException formatError(int lineNumber, String details) {
         return new AxiomException("Problem in data/axiom.txt at line " + lineNumber + ": " + details);
     }
 
+    /**
+     * Serializes a task into the pipe-delimited file format.
+     *
+     * @param task Task to serialize.
+     * @return A single line suitable for writing to the data file.
+     */
     private String formatTask(Task task) {
         String status = task.isDone() ? "1" : "0";
         if (task instanceof Todo) {

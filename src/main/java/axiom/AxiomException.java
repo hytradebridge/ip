@@ -5,6 +5,11 @@ package axiom;
  */
 public class AxiomException extends Exception {
 
+    /**
+     * Creates an exception with the given message.
+     *
+     * @param message Description of the error.
+     */
     public AxiomException(String message) {
         super(message);
     }
