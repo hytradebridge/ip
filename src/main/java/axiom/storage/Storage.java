@@ -15,7 +15,7 @@ import axiom.task.TaskList;
 import axiom.task.Todo;
 
 /**
- * Loads and saves tasks to a file on disk using OS-independent relative paths.
+ * Represents a component that loads and saves tasks to a file on disk using OS-independent relative paths.
  */
 public class Storage {
     private final Path filePath;
@@ -63,7 +63,7 @@ public class Storage {
     }
 
     /**
-     * Writes all tasks to the data file, creating parent folders if needed.
+     * Saves all tasks to the data file, creating parent folders if needed.
      *
      * @param tasks Task list to persist.
      * @throws AxiomException If the file path is invalid or cannot be written.
@@ -135,7 +135,7 @@ public class Storage {
     }
 
     /**
-     * Creates a task of the appropriate type from parsed file fields.
+     * Returns a task of the appropriate type from parsed file fields.
      *
      * @param type Task type code ({@code T}, {@code D}, or {@code E}).
      * @param description Task description.
@@ -175,7 +175,7 @@ public class Storage {
     }
 
     /**
-     * Builds an {@link AxiomException} for a corrupt data file line.
+     * Returns an {@link AxiomException} for a corrupt data file line.
      *
      * @param lineNumber One-based line number of the error.
      * @param details Short description of what went wrong.
@@ -186,7 +186,7 @@ public class Storage {
     }
 
     /**
-     * Serializes a task into the pipe-delimited file format.
+     * Returns the pipe-delimited file format representation of a task.
      *
      * @param task Task to serialize.
      * @return A single line suitable for writing to the data file.

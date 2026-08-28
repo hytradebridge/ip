@@ -6,7 +6,7 @@ import axiom.task.Task;
 import axiom.task.TaskList;
 
 /**
- * Handles interactions with the user via standard input and output.
+ * Represents a component that handles interactions with the user via standard input and output.
  */
 public class Ui {
     private static final String LINE = "____________________________________________________________";
@@ -43,7 +43,7 @@ public class Ui {
     }
 
     /**
-     * Reads the next command from the user.
+     * Returns the next command entered by the user.
      *
      * @return The command line entered by the user.
      */

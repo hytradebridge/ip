@@ -8,7 +8,7 @@ import axiom.task.TaskList;
 import axiom.ui.Ui;
 
 /**
- * Entry point and orchestrator for the AXIOM chatbot.
+ * Represents the entry point and orchestrator for the AXIOM chatbot.
  * Wires together {@link Ui}, {@link Storage}, {@link Parser}, and {@link TaskList}.
  */
 public class Axiom {
@@ -40,7 +40,7 @@ public class Axiom {
     }
 
     /**
-     * Starts the interactive command loop.
+     * Runs the interactive command loop.
      */
     public void run() {
         ui.showWelcome();
@@ -63,7 +63,7 @@ public class Axiom {
     }
 
     /**
-     * Dispatches a user command to the appropriate handler.
+     * Processes a user command and returns whether the program should exit.
      *
      * @param input Raw command line from the user.
      * @return {@code true} if the program should exit.
@@ -153,7 +153,7 @@ public class Axiom {
     }
 
     /**
-     * Launches AXIOM with the default data file path.
+     * Runs AXIOM with the default data file path.
      *
      * @param args Command-line arguments (not used).
      */

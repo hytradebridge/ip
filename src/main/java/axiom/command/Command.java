@@ -43,7 +43,7 @@ public enum Command {
     }
 
     /**
-     * Parses the command keyword from a line of user input.
+     * Returns the command keyword from a line of user input.
      *
      * @param input Full command line from the user.
      * @return The matching command, or {@link #UNKNOWN} if no command matches.

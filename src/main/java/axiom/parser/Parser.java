@@ -8,12 +8,12 @@ import axiom.task.Task;
 import axiom.task.Todo;
 
 /**
- * Makes sense of user commands and converts input into tasks or task indices.
+ * Represents a utility that makes sense of user commands and converts input into tasks or task indices.
  */
 public class Parser {
 
     /**
-     * Identifies the command in a line of user input.
+     * Returns the command identified in a line of user input.
      *
      * @param input Full command line from the user.
      * @return The matching {@link Command}.
@@ -23,7 +23,7 @@ public class Parser {
     }
 
     /**
-     * Extracts and validates a one-based task number from a command.
+     * Returns the validated one-based task number extracted from a command.
      *
      * @param command Command being executed (e.g. {@link Command#MARK}).
      * @param input Full command line from the user.

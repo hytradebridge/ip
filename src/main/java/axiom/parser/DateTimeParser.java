@@ -10,7 +10,7 @@ import java.util.Locale;
 import axiom.AxiomException;
 
 /**
- * Parses user date/time input and formats stored dates for display.
+ * Represents a utility for parsing user date/time input and formatting stored dates for display.
  * This class is not instantiable.
  */
 public class DateTimeParser {
