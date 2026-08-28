@@ -156,7 +156,7 @@ public class Axiom {
             throw new AxiomException("A deadline needs a /by time. "
                     + "Usage: deadline <description> /by <time>");
         }
-        addTask(tasks, new Deadline(description, by));
+        addTask(tasks, new Deadline(description, DateTimeParser.parse(by)));
     }
 
     private static void addEvent(String input, ArrayList<Task> tasks) throws AxiomException {
@@ -186,7 +186,7 @@ public class Axiom {
             throw new AxiomException("An event needs a /to time. "
                     + "Usage: event <description> /from <start> /to <end>");
         }
-        addTask(tasks, new Event(description, from, to));
+        addTask(tasks, new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to)));
     }
 
     private static void addTask(ArrayList<Task> tasks, Task task) throws AxiomException {

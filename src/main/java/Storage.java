@@ -107,7 +107,7 @@ public class Storage {
             if (parts.length < 4 || parts[3].trim().isEmpty()) {
                 throw formatError(lineNumber, "deadline is missing a /by value.");
             }
-            return new Deadline(description, parts[3].trim());
+            return new Deadline(description, DateTimeParser.parseStored(parts[3].trim()));
         case "E":
             if (parts.length < 4) {
                 throw formatError(lineNumber, "event is missing date/time information.");
@@ -122,7 +122,7 @@ public class Storage {
             if (from.isEmpty() || to.isEmpty()) {
                 throw formatError(lineNumber, "event start and end times cannot be empty.");
             }
-            return new Event(description, from, to);
+            return new Event(description, DateTimeParser.parseStored(from), DateTimeParser.parseStored(to));
         default:
             throw formatError(lineNumber, "unknown task type '" + type + "'.");
         }
@@ -138,10 +138,13 @@ public class Storage {
             return "T | " + status + " | " + task.description;
         }
         if (task instanceof Deadline deadline) {
-            return "D | " + status + " | " + task.description + " | " + deadline.by;
+            return "D | " + status + " | " + task.description + " | "
+                    + DateTimeParser.formatStored(deadline.by);
         }
         if (task instanceof Event event) {
-            return "E | " + status + " | " + task.description + " | " + event.from + " to " + event.to;
+            return "E | " + status + " | " + task.description + " | "
+                    + DateTimeParser.formatStored(event.from) + " to "
+                    + DateTimeParser.formatStored(event.to);
         }
         throw new IllegalArgumentException("Unknown task type: " + task.getClass().getName());
     }
