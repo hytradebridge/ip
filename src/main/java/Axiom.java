@@ -26,8 +26,7 @@ public class Axiom {
             } else if (input.equals("list")) {
                 System.out.println(" Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println(" " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "] "
-                            + tasks[i].description);
+                    System.out.println(" " + (i + 1) + "." + tasks[i]);
                 }
             } else if (input.startsWith("mark ")) {
                 int taskNumber = Integer.parseInt(input.substring(5).trim());
@@ -41,10 +40,37 @@ public class Axiom {
                 task.markAsNotDone();
                 System.out.println(" OK, I've marked this task as not done yet:");
                 System.out.println("   " + task);
-            } else {
-                tasks[taskCount] = new Task(input);
+            } else if (input.startsWith("todo ")) {
+                Task task = new Todo(input.substring(5).trim());
+                tasks[taskCount] = task;
                 taskCount++;
-                System.out.println(" added: " + input);
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   " + task);
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
+            } else if (input.startsWith("deadline ")) {
+                String remainder = input.substring(9);
+                int byIndex = remainder.indexOf(" /by ");
+                String description = remainder.substring(0, byIndex).trim();
+                String by = remainder.substring(byIndex + 5).trim();
+                Task task = new Deadline(description, by);
+                tasks[taskCount] = task;
+                taskCount++;
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   " + task);
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
+            } else if (input.startsWith("event ")) {
+                String remainder = input.substring(6);
+                int fromIndex = remainder.indexOf(" /from ");
+                int toIndex = remainder.indexOf(" /to ");
+                String description = remainder.substring(0, fromIndex).trim();
+                String from = remainder.substring(fromIndex + 7, toIndex).trim();
+                String to = remainder.substring(toIndex + 5).trim();
+                Task task = new Event(description, from, to);
+                tasks[taskCount] = task;
+                taskCount++;
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   " + task);
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
             }
             System.out.println("____________________________________________________________");
         }
