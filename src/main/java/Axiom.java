@@ -1,72 +1,77 @@
-import java.util.ArrayList;
-import java.util.Scanner;
-
+/**
+ * Entry point for the AXIOM chatbot.
+ */
 public class Axiom {
-    private static final String LINE = "____________________________________________________________";
+    private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
+    private final Parser parser;
+    private final String loadError;
 
-    public static void main(String[] args) {
-        String banner = "     _    __  _____ ___  __  __ \n"
-                      + "    / \\   \\ \\/ /_ _/ _ \\|  \\/  |\n"
-                      + "   / _ \\   \\  / | | | | | |\\/| |\n"
-                      + "  / ___ \\  /  \\ | | |_| | |  | |\n"
-                      + " /_/   \\_\\/_/\\_\\___\\___/|_|  |_|\n";
-        System.out.println(banner);
-        System.out.println("Hello! I'm AXIOM.");
-        System.out.println("What can I do for you?");
-        System.out.println(LINE);
-
-        Scanner in = new Scanner(System.in);
-        ArrayList<Task> tasks;
+    public Axiom(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        parser = new Parser();
+        TaskList loadedTasks;
+        String errorMessage = null;
         try {
-            tasks = Storage.load();
+            loadedTasks = new TaskList(storage.load());
         } catch (AxiomException e) {
-            System.out.println(" " + e.getMessage());
-            tasks = new ArrayList<>();
+            errorMessage = e.getMessage();
+            loadedTasks = new TaskList();
         }
+        tasks = loadedTasks;
+        loadError = errorMessage;
+    }
 
+    public void run() {
+        ui.showWelcome();
+        if (loadError != null) {
+            ui.showError(loadError);
+        }
         while (true) {
-            String input = in.nextLine();
-            System.out.println(LINE);
+            ui.showLine();
+            String input = ui.readCommand();
             try {
-                if (processCommand(input, tasks)) {
-                    System.out.println(LINE);
+                if (processCommand(input)) {
+                    ui.showLine();
                     break;
                 }
             } catch (AxiomException e) {
-                System.out.println(" " + e.getMessage());
+                ui.showError(e.getMessage());
             }
-            System.out.println(LINE);
+            ui.showLine();
         }
     }
 
     /**
      * Processes a user command. Returns true if the program should exit.
      */
-    private static boolean processCommand(String input, ArrayList<Task> tasks) throws AxiomException {
-        switch (Command.fromInput(input)) {
+    private boolean processCommand(String input) throws AxiomException {
+        switch (parser.getCommand(input)) {
         case BYE:
-            System.out.println(" Bye. Hope to see you again soon!");
+            ui.showGoodbye();
             return true;
         case LIST:
-            printList(tasks);
+            ui.showTaskList(tasks);
             break;
         case MARK:
-            markTask(input, tasks);
+            markTask(input);
             break;
         case UNMARK:
-            unmarkTask(input, tasks);
+            unmarkTask(input);
             break;
         case DELETE:
-            deleteTask(input, tasks);
+            deleteTask(input);
             break;
         case TODO:
-            addTodo(input, tasks);
+            addTask(parser.parseTodo(input));
             break;
         case DEADLINE:
-            addDeadline(input, tasks);
+            addTask(parser.parseDeadline(input));
             break;
         case EVENT:
-            addEvent(input, tasks);
+            addTask(parser.parseEvent(input));
             break;
         default:
             throw new AxiomException("Sorry, I don't understand that command.");
@@ -74,130 +79,34 @@ public class Axiom {
         return false;
     }
 
-    private static void printList(ArrayList<Task> tasks) {
-        System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i));
-        }
+    private void markTask(String input) throws AxiomException {
+        int taskNumber = parser.parseTaskNumber(Command.MARK, input, tasks.size());
+        tasks.markAsDone(taskNumber - 1);
+        ui.showMarked(tasks.get(taskNumber - 1));
+        storage.save(tasks);
     }
 
-    private static void markTask(String input, ArrayList<Task> tasks) throws AxiomException {
-        int taskNumber = parseTaskNumber(Command.MARK, input, tasks.size());
-        Task task = tasks.get(taskNumber - 1);
-        task.markAsDone();
-        System.out.println(" Nice! I've marked this task as done:");
-        System.out.println("   " + task);
-        saveTasks(tasks);
+    private void unmarkTask(String input) throws AxiomException {
+        int taskNumber = parser.parseTaskNumber(Command.UNMARK, input, tasks.size());
+        tasks.markAsNotDone(taskNumber - 1);
+        ui.showUnmarked(tasks.get(taskNumber - 1));
+        storage.save(tasks);
     }
 
-    private static void unmarkTask(String input, ArrayList<Task> tasks) throws AxiomException {
-        int taskNumber = parseTaskNumber(Command.UNMARK, input, tasks.size());
-        Task task = tasks.get(taskNumber - 1);
-        task.markAsNotDone();
-        System.out.println(" OK, I've marked this task as not done yet:");
-        System.out.println("   " + task);
-        saveTasks(tasks);
+    private void deleteTask(String input) throws AxiomException {
+        int taskNumber = parser.parseTaskNumber(Command.DELETE, input, tasks.size());
+        Task removed = tasks.delete(taskNumber - 1);
+        ui.showDeleted(removed, tasks.size());
+        storage.save(tasks);
     }
 
-    private static void deleteTask(String input, ArrayList<Task> tasks) throws AxiomException {
-        int taskNumber = parseTaskNumber(Command.DELETE, input, tasks.size());
-        Task removed = tasks.remove(taskNumber - 1);
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("   " + removed);
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-        saveTasks(tasks);
-    }
-
-    private static int parseTaskNumber(Command command, String input, int taskCount) throws AxiomException {
-        String argument = command.getArgument(input);
-        if (argument.isEmpty()) {
-            throw new AxiomException("Please specify which task to " + command.getKeyword()
-                    + ". Usage: " + command.getKeyword() + " <task number>");
-        }
-        try {
-            int taskNumber = Integer.parseInt(argument);
-            if (taskNumber < 1 || taskNumber > taskCount) {
-                throw new AxiomException("That task number isn't in your list. You currently have "
-                        + taskCount + " task(s).");
-            }
-            return taskNumber;
-        } catch (NumberFormatException e) {
-            throw new AxiomException("'" + argument + "' is not a valid task number. Usage: "
-                    + command.getKeyword() + " <task number>");
-        }
-    }
-
-    private static void addTodo(String input, ArrayList<Task> tasks) throws AxiomException {
-        String description = Command.TODO.getArgument(input);
-        if (description.isEmpty()) {
-            throw new AxiomException("A todo needs a description. Usage: todo <description>");
-        }
-        addTask(tasks, new Todo(description));
-    }
-
-    private static void addDeadline(String input, ArrayList<Task> tasks) throws AxiomException {
-        String remainder = Command.DEADLINE.getArgument(input);
-        if (remainder.isEmpty()) {
-            throw new AxiomException("A deadline needs a description and a /by time. "
-                    + "Usage: deadline <description> /by <time>");
-        }
-        int byIndex = remainder.indexOf(" /by ");
-        if (byIndex == -1) {
-            throw new AxiomException("A deadline must include /by. "
-                    + "Usage: deadline <description> /by <time>");
-        }
-        String description = remainder.substring(0, byIndex).trim();
-        String by = remainder.substring(byIndex + 5).trim();
-        if (description.isEmpty()) {
-            throw new AxiomException("A deadline needs a description. "
-                    + "Usage: deadline <description> /by <time>");
-        }
-        if (by.isEmpty()) {
-            throw new AxiomException("A deadline needs a /by time. "
-                    + "Usage: deadline <description> /by <time>");
-        }
-        addTask(tasks, new Deadline(description, DateTimeParser.parse(by)));
-    }
-
-    private static void addEvent(String input, ArrayList<Task> tasks) throws AxiomException {
-        String remainder = Command.EVENT.getArgument(input);
-        if (remainder.isEmpty()) {
-            throw new AxiomException("An event needs a description, /from, and /to times. "
-                    + "Usage: event <description> /from <start> /to <end>");
-        }
-        int fromIndex = remainder.indexOf(" /from ");
-        int toIndex = remainder.indexOf(" /to ");
-        if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-            throw new AxiomException("An event must include /from and /to. "
-                    + "Usage: event <description> /from <start> /to <end>");
-        }
-        String description = remainder.substring(0, fromIndex).trim();
-        String from = remainder.substring(fromIndex + 7, toIndex).trim();
-        String to = remainder.substring(toIndex + 5).trim();
-        if (description.isEmpty()) {
-            throw new AxiomException("An event needs a description. "
-                    + "Usage: event <description> /from <start> /to <end>");
-        }
-        if (from.isEmpty()) {
-            throw new AxiomException("An event needs a /from time. "
-                    + "Usage: event <description> /from <start> /to <end>");
-        }
-        if (to.isEmpty()) {
-            throw new AxiomException("An event needs a /to time. "
-                    + "Usage: event <description> /from <start> /to <end>");
-        }
-        addTask(tasks, new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to)));
-    }
-
-    private static void addTask(ArrayList<Task> tasks, Task task) throws AxiomException {
+    private void addTask(Task task) throws AxiomException {
         tasks.add(task);
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-        saveTasks(tasks);
+        ui.showTaskAdded(task, tasks.size());
+        storage.save(tasks);
     }
 
-    private static void saveTasks(ArrayList<Task> tasks) throws AxiomException {
-        Storage.save(tasks);
+    public static void main(String[] args) {
+        new Axiom("data/axiom.txt").run();
     }
 }

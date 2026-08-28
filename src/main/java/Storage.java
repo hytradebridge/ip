@@ -5,30 +5,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Saves and loads tasks from a file on disk using OS-independent relative paths.
+ * Loads and saves tasks to a file on disk using OS-independent relative paths.
  */
 public class Storage {
-    private static final Path DATA_DIR = Path.of("data");
-    private static final Path FILE_PATH = DATA_DIR.resolve("axiom.txt");
+    private final Path filePath;
+
+    public Storage(String filePath) {
+        this.filePath = Path.of(filePath);
+    }
 
     /**
-     * Loads tasks from the data file. Returns an empty list when the file or folder
-     * does not exist yet.
+     * Loads tasks from the data file. Returns an empty list when the file does not exist yet.
      */
-    public static ArrayList<Task> load() throws AxiomException {
-        if (!Files.exists(FILE_PATH)) {
+    public ArrayList<Task> load() throws AxiomException {
+        if (!Files.exists(filePath)) {
             return new ArrayList<>();
         }
-        if (Files.isDirectory(FILE_PATH)) {
-            throw new AxiomException("Cannot load tasks because data/axiom.txt is a directory.");
+        if (Files.isDirectory(filePath)) {
+            throw new AxiomException("Cannot load tasks because " + filePath + " is a directory.");
         }
-        if (!Files.isReadable(FILE_PATH)) {
-            throw new AxiomException("Cannot read tasks from data/axiom.txt.");
+        if (!Files.isReadable(filePath)) {
+            throw new AxiomException("Cannot read tasks from " + filePath + ".");
         }
 
         try {
             ArrayList<Task> tasks = new ArrayList<>();
-            List<String> lines = Files.readAllLines(FILE_PATH);
+            List<String> lines = Files.readAllLines(filePath);
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if (line.trim().isEmpty()) {
@@ -38,41 +40,45 @@ public class Storage {
             }
             return tasks;
         } catch (IOException e) {
-            throw new AxiomException("Could not read tasks from data/axiom.txt.");
+            throw new AxiomException("Could not read tasks from " + filePath + ".");
         }
     }
 
     /**
-     * Writes all tasks to the data file, creating the data folder if needed.
+     * Writes all tasks to the data file, creating parent folders if needed.
      */
-    public static void save(ArrayList<Task> tasks) throws AxiomException {
+    public void save(TaskList tasks) throws AxiomException {
         ensureWritablePath();
         try {
-            Files.createDirectories(DATA_DIR);
+            Path parent = filePath.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
             ArrayList<String> lines = new ArrayList<>();
-            for (Task task : tasks) {
+            for (Task task : tasks.getTasks()) {
                 lines.add(formatTask(task));
             }
-            Files.write(FILE_PATH, lines);
+            Files.write(filePath, lines);
         } catch (IOException e) {
-            throw new AxiomException("Could not save tasks to data/axiom.txt.");
+            throw new AxiomException("Could not save tasks to " + filePath + ".");
         }
     }
 
-    static Path getFilePath() {
-        return FILE_PATH;
+    Path getFilePath() {
+        return filePath;
     }
 
-    private static void ensureWritablePath() throws AxiomException {
-        if (Files.exists(DATA_DIR) && !Files.isDirectory(DATA_DIR)) {
-            throw new AxiomException("Cannot save tasks because data is not a folder.");
+    private void ensureWritablePath() throws AxiomException {
+        Path parent = filePath.getParent();
+        if (parent != null && Files.exists(parent) && !Files.isDirectory(parent)) {
+            throw new AxiomException("Cannot save tasks because " + parent + " is not a folder.");
         }
-        if (Files.exists(FILE_PATH) && Files.isDirectory(FILE_PATH)) {
-            throw new AxiomException("Cannot save tasks because data/axiom.txt is a directory.");
+        if (Files.exists(filePath) && Files.isDirectory(filePath)) {
+            throw new AxiomException("Cannot save tasks because " + filePath + " is a directory.");
         }
     }
 
-    private static Task parseTask(String line, int lineNumber) throws AxiomException {
+    private Task parseTask(String line, int lineNumber) throws AxiomException {
         String[] parts = line.split(" \\| ", -1);
         if (parts.length < 3) {
             throw formatError(lineNumber, "expected format TYPE | STATUS | DESCRIPTION.");
@@ -98,7 +104,7 @@ public class Storage {
         return task;
     }
 
-    private static Task createTask(String type, String description, String[] parts, int lineNumber)
+    private Task createTask(String type, String description, String[] parts, int lineNumber)
             throws AxiomException {
         switch (type) {
         case "T":
@@ -128,11 +134,11 @@ public class Storage {
         }
     }
 
-    private static AxiomException formatError(int lineNumber, String details) {
+    private AxiomException formatError(int lineNumber, String details) {
         return new AxiomException("Problem in data/axiom.txt at line " + lineNumber + ": " + details);
     }
 
-    private static String formatTask(Task task) {
+    private String formatTask(Task task) {
         String status = task.isDone ? "1" : "0";
         if (task instanceof Todo) {
             return "T | " + status + " | " + task.description;
