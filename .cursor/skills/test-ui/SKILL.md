@@ -16,6 +16,8 @@ Run console UI tests for this project. Test cases live in [test/ui-test-plan.md]
 - When the user asks to run UI tests or verify chatbot behavior
 - When adding or updating test cases in the test plan
 
+JUnit unit tests live under `src/test/java/` and are run with `./gradlew test`. See `AGENTS.md` for the ~50% highest-value-method coverage target; update JUnit tests whenever production code changes.
+
 ## Workflow
 
 1. Ensure Java 25 is active on macOS:

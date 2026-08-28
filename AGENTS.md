@@ -33,3 +33,22 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
+
+## Testing
+
+This project uses two layers of automated tests:
+
+* **UI tests** — console session tests in `test/ui-test-plan.md`, run via `python3 test/run-ui-tests.py`.
+* **JUnit tests** — unit tests under `src/test/java/`, run via `./gradlew test`.
+
+### JUnit test coverage target
+
+Aim to cover the **top ~50% highest-value methods** in the codebase. Prioritize complex, core, or critical business logic (e.g. parsing, command handling, task-list operations) over thin wrappers, I/O, or the main application loop.
+
+When adding or changing production code, **update the relevant JUnit tests in the same change** so they stay aligned with behavior and continue to meet the ~50% coverage target. Run `./gradlew test` before considering the work complete.
+
+### JUnit conventions
+
+* Mirror the main source package structure under `src/test/java/` (e.g. `axiom.task.Todo` → `axiom.task.TodoTest`).
+* Name test classes `<ClassUnderTest>Test`.
+* For longer test names, use `featureUnderTest_testScenario_expectedBehavior()` (e.g. `parse_invalidFormat_exceptionThrown()`).
