@@ -24,6 +24,13 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Coding standards (mandatory)
+
+All agents working in this repository **must** follow these project skills:
+
+* **Java code** — read and apply [.cursor/skills/seedu-java-coding-standard/SKILL.md](.cursor/skills/seedu-java-coding-standard/SKILL.md) when writing, reviewing, or refactoring any `.java` file (source or test). Standards are based on the [SE-EDU Java coding standard (basic + intermediate)](https://se-education.org/guides/conventions/java/intermediate.html).
+* **Git commits** — read and apply [.cursor/skills/seedu-git-standard/SKILL.md](.cursor/skills/seedu-git-standard/SKILL.md) when proposing or creating commits. Standards are based on the [SE-EDU Git conventions](https://se-education.org/guides/conventions/git.html).
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
@@ -38,6 +45,8 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 `build.gradle` uses the Shadow plugin (`com.gradleup.shadow`) with `application.mainClass = 'axiom.Axiom'`. The plain `jar` task is disabled; `shadowJar` is the distributable artifact.
 
 ## Git
+
+Follow [.cursor/skills/seedu-git-standard/SKILL.md](.cursor/skills/seedu-git-standard/SKILL.md) for all commit messages and branch names.
 
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
