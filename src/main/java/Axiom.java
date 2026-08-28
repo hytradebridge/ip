@@ -13,6 +13,9 @@ public class Axiom {
         System.out.println("____________________________________________________________");
 
         Scanner in = new Scanner(System.in);
+        String[] tasks = new String[100];
+        int taskCount = 0;
+
         while (true) {
             String input = in.nextLine();
             System.out.println("____________________________________________________________");
@@ -20,8 +23,15 @@ public class Axiom {
                 System.out.println(" Bye. Hope to see you again soon!");
                 System.out.println("____________________________________________________________");
                 break;
+            } else if (input.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println(" added: " + input);
             }
-            System.out.println(" " + input);
             System.out.println("____________________________________________________________");
         }
     }
