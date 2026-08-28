@@ -22,12 +22,10 @@ public class Axiom {
             String input = in.nextLine();
             System.out.println(LINE);
             try {
-                if (input.equals("bye")) {
-                    System.out.println(" Bye. Hope to see you again soon!");
+                if (processCommand(input, tasks)) {
                     System.out.println(LINE);
                     break;
                 }
-                processCommand(input, tasks);
             } catch (AxiomException e) {
                 System.out.println(" " + e.getMessage());
             }
@@ -35,24 +33,39 @@ public class Axiom {
         }
     }
 
-    private static void processCommand(String input, ArrayList<Task> tasks) throws AxiomException {
-        if (input.equals("list")) {
+    /**
+     * Processes a user command. Returns true if the program should exit.
+     */
+    private static boolean processCommand(String input, ArrayList<Task> tasks) throws AxiomException {
+        switch (Command.fromInput(input)) {
+        case BYE:
+            System.out.println(" Bye. Hope to see you again soon!");
+            return true;
+        case LIST:
             printList(tasks);
-        } else if (input.equals("mark") || input.startsWith("mark ")) {
+            break;
+        case MARK:
             markTask(input, tasks);
-        } else if (input.equals("unmark") || input.startsWith("unmark ")) {
+            break;
+        case UNMARK:
             unmarkTask(input, tasks);
-        } else if (input.equals("delete") || input.startsWith("delete ")) {
+            break;
+        case DELETE:
             deleteTask(input, tasks);
-        } else if (input.equals("todo") || input.startsWith("todo ")) {
+            break;
+        case TODO:
             addTodo(input, tasks);
-        } else if (input.equals("deadline") || input.startsWith("deadline ")) {
+            break;
+        case DEADLINE:
             addDeadline(input, tasks);
-        } else if (input.equals("event") || input.startsWith("event ")) {
+            break;
+        case EVENT:
             addEvent(input, tasks);
-        } else {
+            break;
+        default:
             throw new AxiomException("Sorry, I don't understand that command.");
         }
+        return false;
     }
 
     private static void printList(ArrayList<Task> tasks) {
@@ -63,7 +76,7 @@ public class Axiom {
     }
 
     private static void markTask(String input, ArrayList<Task> tasks) throws AxiomException {
-        int taskNumber = parseTaskNumber(input, "mark", tasks.size());
+        int taskNumber = parseTaskNumber(Command.MARK, input, tasks.size());
         Task task = tasks.get(taskNumber - 1);
         task.markAsDone();
         System.out.println(" Nice! I've marked this task as done:");
@@ -71,7 +84,7 @@ public class Axiom {
     }
 
     private static void unmarkTask(String input, ArrayList<Task> tasks) throws AxiomException {
-        int taskNumber = parseTaskNumber(input, "unmark", tasks.size());
+        int taskNumber = parseTaskNumber(Command.UNMARK, input, tasks.size());
         Task task = tasks.get(taskNumber - 1);
         task.markAsNotDone();
         System.out.println(" OK, I've marked this task as not done yet:");
@@ -79,18 +92,18 @@ public class Axiom {
     }
 
     private static void deleteTask(String input, ArrayList<Task> tasks) throws AxiomException {
-        int taskNumber = parseTaskNumber(input, "delete", tasks.size());
+        int taskNumber = parseTaskNumber(Command.DELETE, input, tasks.size());
         Task removed = tasks.remove(taskNumber - 1);
         System.out.println(" Noted. I've removed this task:");
         System.out.println("   " + removed);
         System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
     }
 
-    private static int parseTaskNumber(String input, String command, int taskCount) throws AxiomException {
-        String argument = input.equals(command) ? "" : input.substring(command.length() + 1).trim();
+    private static int parseTaskNumber(Command command, String input, int taskCount) throws AxiomException {
+        String argument = command.getArgument(input);
         if (argument.isEmpty()) {
-            throw new AxiomException("Please specify which task to " + command
-                    + ". Usage: " + command + " <task number>");
+            throw new AxiomException("Please specify which task to " + command.getKeyword()
+                    + ". Usage: " + command.getKeyword() + " <task number>");
         }
         try {
             int taskNumber = Integer.parseInt(argument);
@@ -101,12 +114,12 @@ public class Axiom {
             return taskNumber;
         } catch (NumberFormatException e) {
             throw new AxiomException("'" + argument + "' is not a valid task number. Usage: "
-                    + command + " <task number>");
+                    + command.getKeyword() + " <task number>");
         }
     }
 
     private static void addTodo(String input, ArrayList<Task> tasks) throws AxiomException {
-        String description = input.equals("todo") ? "" : input.substring(5).trim();
+        String description = Command.TODO.getArgument(input);
         if (description.isEmpty()) {
             throw new AxiomException("A todo needs a description. Usage: todo <description>");
         }
@@ -114,11 +127,11 @@ public class Axiom {
     }
 
     private static void addDeadline(String input, ArrayList<Task> tasks) throws AxiomException {
-        if (input.equals("deadline")) {
+        String remainder = Command.DEADLINE.getArgument(input);
+        if (remainder.isEmpty()) {
             throw new AxiomException("A deadline needs a description and a /by time. "
                     + "Usage: deadline <description> /by <time>");
         }
-        String remainder = input.substring(9);
         int byIndex = remainder.indexOf(" /by ");
         if (byIndex == -1) {
             throw new AxiomException("A deadline must include /by. "
@@ -138,11 +151,11 @@ public class Axiom {
     }
 
     private static void addEvent(String input, ArrayList<Task> tasks) throws AxiomException {
-        if (input.equals("event")) {
+        String remainder = Command.EVENT.getArgument(input);
+        if (remainder.isEmpty()) {
             throw new AxiomException("An event needs a description, /from, and /to times. "
                     + "Usage: event <description> /from <start> /to <end>");
         }
-        String remainder = input.substring(6);
         int fromIndex = remainder.indexOf(" /from ");
         int toIndex = remainder.indexOf(" /to ");
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
