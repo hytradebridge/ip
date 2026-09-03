@@ -17,6 +17,7 @@ public class Axiom {
     private final Ui ui;
     private final Parser parser;
     private final String loadError;
+    private boolean isExit;
 
     /**
      * Creates a new AXIOM instance and loads tasks from the given file path.
@@ -51,7 +52,8 @@ public class Axiom {
             ui.showLine();
             String input = ui.readCommand();
             try {
-                if (processCommand(input)) {
+                System.out.println(execute(input));
+                if (isExit) {
                     ui.showLine();
                     break;
                 }
@@ -63,107 +65,144 @@ public class Axiom {
     }
 
     /**
-     * Processes a user command and returns whether the program should exit.
+     * Returns the greeting shown when the GUI starts.
      *
-     * @param input Raw command line from the user.
-     * @return {@code true} if the program should exit.
-     * @throws AxiomException If the command is invalid or cannot be executed.
+     * @return Welcome text for the chatbot window.
      */
-    private boolean processCommand(String input) throws AxiomException {
-        switch (parser.getCommand(input)) {
-        case BYE:
-            ui.showGoodbye();
-            return true;
-        case LIST:
-            ui.showTaskList(tasks);
-            break;
-        case FIND:
-            findTasks(input);
-            break;
-        case MARK:
-            markTask(input);
-            break;
-        case UNMARK:
-            unmarkTask(input);
-            break;
-        case DELETE:
-            deleteTask(input);
-            break;
-        case TODO:
-            addTask(parser.parseTodo(input));
-            break;
-        case DEADLINE:
-            addTask(parser.parseDeadline(input));
-            break;
-        case EVENT:
-            addTask(parser.parseEvent(input));
-            break;
-        default:
-            throw new AxiomException("Sorry, I don't understand that command.");
-        }
-        return false;
+    public String getWelcomeMessage() {
+        return ui.formatGuiWelcome();
     }
 
     /**
-     * Finds and displays tasks matching a keyword in their description.
+     * Returns the error from loading the data file, if any.
+     *
+     * @return Load error message, or {@code null} if loading succeeded.
+     */
+    public String getLoadError() {
+        return loadError;
+    }
+
+    /**
+     * Returns whether the most recent command requested the program to exit.
+     *
+     * @return {@code true} if the user issued a {@code bye} command.
+     */
+    public boolean isExit() {
+        return isExit;
+    }
+
+    /**
+     * Generates a response for the user's chat message.
+     *
+     * @param input Raw command line from the user.
+     * @return Reply to show in the GUI, including error messages.
+     */
+    public String getResponse(String input) {
+        try {
+            return execute(input);
+        } catch (AxiomException e) {
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * Executes a user command and returns the reply to display.
+     *
+     * @param input Raw command line from the user.
+     * @return Reply text for the command.
+     * @throws AxiomException If the command is invalid or cannot be executed.
+     */
+    private String execute(String input) throws AxiomException {
+        switch (parser.getCommand(input)) {
+        case BYE:
+            isExit = true;
+            return ui.formatGoodbye();
+        case LIST:
+            return ui.formatTaskList(tasks);
+        case FIND:
+            return findTasks(input);
+        case MARK:
+            return markTask(input);
+        case UNMARK:
+            return unmarkTask(input);
+        case DELETE:
+            return deleteTask(input);
+        case TODO:
+            return addTask(parser.parseTodo(input));
+        case DEADLINE:
+            return addTask(parser.parseDeadline(input));
+        case EVENT:
+            return addTask(parser.parseEvent(input));
+        default:
+            throw new AxiomException("Sorry, I don't understand that command.");
+        }
+    }
+
+    /**
+     * Finds tasks matching a keyword in their description.
      *
      * @param input Full {@code find} command line.
+     * @return Formatted matching-task text.
      * @throws AxiomException If the keyword is missing.
      */
-    private void findTasks(String input) throws AxiomException {
+    private String findTasks(String input) throws AxiomException {
         String keyword = parser.parseFindKeyword(input);
-        ui.showMatchingTasks(tasks, tasks.findMatchingTaskNumbers(keyword));
+        return ui.formatMatchingTasks(tasks, tasks.findMatchingTaskNumbers(keyword));
     }
 
     /**
      * Marks a task as done and persists the updated list.
      *
      * @param input Full {@code mark} command line.
+     * @return Formatted mark confirmation.
      * @throws AxiomException If the task number is missing or invalid.
      */
-    private void markTask(String input) throws AxiomException {
+    private String markTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.MARK, input, tasks.size());
         tasks.markAsDone(taskNumber - 1);
-        ui.showMarked(tasks.get(taskNumber - 1));
         storage.save(tasks);
+        return ui.formatMarked(tasks.get(taskNumber - 1));
     }
 
     /**
      * Marks a task as not done and persists the updated list.
      *
      * @param input Full {@code unmark} command line.
+     * @return Formatted unmark confirmation.
      * @throws AxiomException If the task number is missing or invalid.
      */
-    private void unmarkTask(String input) throws AxiomException {
+    private String unmarkTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.UNMARK, input, tasks.size());
         tasks.markAsNotDone(taskNumber - 1);
-        ui.showUnmarked(tasks.get(taskNumber - 1));
         storage.save(tasks);
+        return ui.formatUnmarked(tasks.get(taskNumber - 1));
     }
 
     /**
      * Deletes a task and persists the updated list.
      *
      * @param input Full {@code delete} command line.
+     * @return Formatted delete confirmation.
      * @throws AxiomException If the task number is missing or invalid.
      */
-    private void deleteTask(String input) throws AxiomException {
+    private String deleteTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.DELETE, input, tasks.size());
         Task removed = tasks.delete(taskNumber - 1);
-        ui.showDeleted(removed, tasks.size());
         storage.save(tasks);
+        return ui.formatDeleted(removed, tasks.size());
     }
 
     /**
      * Adds a task and persists the updated list.
      *
      * @param task Task to add.
+     * @return Formatted add-task confirmation.
      * @throws AxiomException If the task list cannot be saved.
      */
-    private void addTask(Task task) throws AxiomException {
+    private String addTask(Task task) throws AxiomException {
         tasks.add(task);
-        ui.showTaskAdded(task, tasks.size());
         storage.save(tasks);
+        return ui.formatTaskAdded(task, tasks.size());
     }
 
     /**
