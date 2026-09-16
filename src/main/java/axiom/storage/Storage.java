@@ -18,6 +18,20 @@ import axiom.task.Todo;
  * Represents a component that loads and saves tasks to a file on disk using OS-independent relative paths.
  */
 public class Storage {
+    private static final String FIELD_DELIMITER = " | ";
+    private static final String FIELD_SPLIT_REGEX = " \\| ";
+    private static final String EVENT_TIME_DELIMITER = " to ";
+    private static final String TYPE_TODO = "T";
+    private static final String TYPE_DEADLINE = "D";
+    private static final String TYPE_EVENT = "E";
+    private static final String STATUS_DONE = "1";
+    private static final String STATUS_NOT_DONE = "0";
+    private static final int MIN_FIELD_COUNT = 3;
+    private static final int TYPE_INDEX = 0;
+    private static final int STATUS_INDEX = 1;
+    private static final int DESCRIPTION_INDEX = 2;
+    private static final int DETAILS_INDEX = 3;
+
     private final Path filePath;
 
     /**
@@ -109,23 +123,23 @@ public class Storage {
      * @throws AxiomException If the line format is invalid.
      */
     private Task parseTask(String line, int lineNumber) throws AxiomException {
-        String[] parts = line.split(" \\| ", -1);
-        if (parts.length < 3) {
+        String[] parts = line.split(FIELD_SPLIT_REGEX, -1);
+        if (parts.length < MIN_FIELD_COUNT) {
             throw formatError(lineNumber, "expected format TYPE | STATUS | DESCRIPTION.");
         }
 
-        String type = parts[0].trim();
-        String status = parts[1].trim();
-        String description = parts[2].trim();
+        String type = parts[TYPE_INDEX].trim();
+        String status = parts[STATUS_INDEX].trim();
+        String description = parts[DESCRIPTION_INDEX].trim();
 
-        if (!status.equals("0") && !status.equals("1")) {
+        if (!status.equals(STATUS_NOT_DONE) && !status.equals(STATUS_DONE)) {
             throw formatError(lineNumber, "status must be 0 or 1.");
         }
         if (description.isEmpty()) {
             throw formatError(lineNumber, "description cannot be empty.");
         }
 
-        boolean isDone = status.equals("1");
+        boolean isDone = status.equals(STATUS_DONE);
         Task task = createTask(type, description, parts, lineNumber);
 
         if (isDone) {
@@ -147,24 +161,24 @@ public class Storage {
     private Task createTask(String type, String description, String[] parts, int lineNumber)
             throws AxiomException {
         switch (type) {
-        case "T":
+        case TYPE_TODO:
             return new Todo(description);
-        case "D":
-            if (parts.length < 4 || parts[3].trim().isEmpty()) {
+        case TYPE_DEADLINE:
+            if (parts.length <= DETAILS_INDEX || parts[DETAILS_INDEX].trim().isEmpty()) {
                 throw formatError(lineNumber, "deadline is missing a /by value.");
             }
-            return new Deadline(description, DateTimeParser.parseStored(parts[3].trim()));
-        case "E":
-            if (parts.length < 4) {
+            return new Deadline(description, DateTimeParser.parseStored(parts[DETAILS_INDEX].trim()));
+        case TYPE_EVENT:
+            if (parts.length <= DETAILS_INDEX) {
                 throw formatError(lineNumber, "event is missing date/time information.");
             }
-            String fromTo = parts[3].trim();
-            int toIndex = fromTo.indexOf(" to ");
+            String fromTo = parts[DETAILS_INDEX].trim();
+            int toIndex = fromTo.indexOf(EVENT_TIME_DELIMITER);
             if (toIndex == -1) {
                 throw formatError(lineNumber, "event must contain ' to ' between start and end times.");
             }
             String from = fromTo.substring(0, toIndex).trim();
-            String to = fromTo.substring(toIndex + 4).trim();
+            String to = fromTo.substring(toIndex + EVENT_TIME_DELIMITER.length()).trim();
             if (from.isEmpty() || to.isEmpty()) {
                 throw formatError(lineNumber, "event start and end times cannot be empty.");
             }
@@ -192,18 +206,18 @@ public class Storage {
      * @return A single line suitable for writing to the data file.
      */
     private String formatTask(Task task) {
-        String status = task.isDone() ? "1" : "0";
+        String status = task.isDone() ? STATUS_DONE : STATUS_NOT_DONE;
         if (task instanceof Todo) {
-            return "T | " + status + " | " + task.getDescription();
+            return TYPE_TODO + FIELD_DELIMITER + status + FIELD_DELIMITER + task.getDescription();
         }
         if (task instanceof Deadline deadline) {
-            return "D | " + status + " | " + task.getDescription() + " | "
-                    + DateTimeParser.formatStored(deadline.getBy());
+            return TYPE_DEADLINE + FIELD_DELIMITER + status + FIELD_DELIMITER + task.getDescription()
+                    + FIELD_DELIMITER + DateTimeParser.formatStored(deadline.getBy());
         }
         if (task instanceof Event event) {
-            return "E | " + status + " | " + task.getDescription() + " | "
-                    + DateTimeParser.formatStored(event.getFrom()) + " to "
-                    + DateTimeParser.formatStored(event.getTo());
+            return TYPE_EVENT + FIELD_DELIMITER + status + FIELD_DELIMITER + task.getDescription()
+                    + FIELD_DELIMITER + DateTimeParser.formatStored(event.getFrom())
+                    + EVENT_TIME_DELIMITER + DateTimeParser.formatStored(event.getTo());
         }
         throw new IllegalArgumentException("Unknown task type: " + task.getClass().getName());
     }
