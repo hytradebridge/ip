@@ -13,6 +13,9 @@ public class Task {
      * @param description Description of the task.
      */
     public Task(String description) {
+        // Parser and Storage reject empty descriptions; reaching here with a blank value is a bug.
+        assert description != null && !description.isBlank()
+                : "Task description should not be null or blank";
         this.description = description;
         this.isDone = false;
     }

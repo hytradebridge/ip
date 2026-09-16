@@ -117,8 +117,13 @@ public class Ui {
      * @return Formatted matching-task text.
      */
     public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
+        assert tasks != null : "Task list should not be null";
+        assert matchingNumbers != null : "Matching numbers should not be null";
         StringBuilder builder = new StringBuilder(" Here are the matching tasks in your list:");
         for (int number : matchingNumbers) {
+            // findMatchingTaskNumbers only returns 1-based indices that exist in the list.
+            assert number >= 1 && number <= tasks.size()
+                    : "Matching number should be a valid 1-based task index";
             builder.append('\n').append(" ").append(number).append('.').append(tasks.get(number - 1));
         }
         return builder.toString();

@@ -21,6 +21,9 @@ public class Event extends Task {
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
+        // DateTimeParser always returns parsed values; null times mean a caller bug.
+        assert from != null : "Event /from date-time should not be null";
+        assert to != null : "Event /to date-time should not be null";
         this.from = from;
         this.to = to;
     }
