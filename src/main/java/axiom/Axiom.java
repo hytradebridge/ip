@@ -55,7 +55,7 @@ public class Axiom {
             ui.showLine();
             String input = ui.readCommand();
             try {
-                System.out.println(execute(input));
+                ui.showMessage(execute(input));
                 if (isExit) {
                     ui.showLine();
                     break;

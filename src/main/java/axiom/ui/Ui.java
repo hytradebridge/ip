@@ -41,12 +41,12 @@ public class Ui {
     }
 
     /**
-     * Returns the next command entered by the user.
+     * Displays a message to the user.
      *
-     * @return The command line entered by the user.
+     * @param message Text to display.
      */
-    public String readCommand() {
-        return scanner.nextLine();
+    public void showMessage(String message) {
+        System.out.println(message);
     }
 
     /**
@@ -56,6 +56,15 @@ public class Ui {
      */
     public void showError(String message) {
         System.out.println(" " + message);
+    }
+
+    /**
+     * Returns the next command entered by the user.
+     *
+     * @return The command line entered by the user.
+     */
+    public String readCommand() {
+        return scanner.nextLine();
     }
 
     /**
