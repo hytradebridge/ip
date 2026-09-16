@@ -72,11 +72,18 @@ public class MainWindow extends AnchorPane {
         userInput.clear();
 
         if (axiom.isExit()) {
-            userInput.setDisable(true);
-            sendButton.setDisable(true);
-            PauseTransition delay = new PauseTransition(Duration.seconds(EXIT_DELAY_SECONDS));
-            delay.setOnFinished(event -> Platform.exit());
-            delay.play();
+            exitAfterDelay();
         }
+    }
+
+    /**
+     * Disables input and closes the window after a short delay so the goodbye message is visible.
+     */
+    private void exitAfterDelay() {
+        userInput.setDisable(true);
+        sendButton.setDisable(true);
+        PauseTransition delay = new PauseTransition(Duration.seconds(EXIT_DELAY_SECONDS));
+        delay.setOnFinished(event -> Platform.exit());
+        delay.play();
     }
 }
