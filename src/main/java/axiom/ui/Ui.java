@@ -30,7 +30,7 @@ public class Ui {
      * Displays the welcome banner and greeting.
      */
     public void showWelcome() {
-        System.out.println(formatGuiWelcome());
+        System.out.println(formatWelcome());
     }
 
     /**
@@ -59,11 +59,11 @@ public class Ui {
     }
 
     /**
-     * Returns the greeting shown in the GUI, including the ASCII banner and separator line.
+     * Returns the welcome banner and greeting.
      *
-     * @return Welcome text for the chatbot window.
+     * @return Welcome text for the chatbot.
      */
-    public String formatGuiWelcome() {
+    public String formatWelcome() {
         return BANNER + "\nHello! I'm AXIOM.\nWhat can I do for you?\n" + LINE;
     }
 

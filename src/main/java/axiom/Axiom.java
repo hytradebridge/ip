@@ -73,7 +73,7 @@ public class Axiom {
      * @return Welcome text for the chatbot window.
      */
     public String getWelcomeMessage() {
-        return ui.formatGuiWelcome();
+        return ui.formatWelcome();
     }
 
     /**
