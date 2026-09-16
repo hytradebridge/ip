@@ -11,6 +11,11 @@ import axiom.task.Todo;
  * Represents a utility that makes sense of user commands and converts input into tasks or task indices.
  */
 public class Parser {
+    private static final String BY_DELIMITER = " /by ";
+    private static final String FROM_DELIMITER = " /from ";
+    private static final String TO_DELIMITER = " /to ";
+    private static final String DEADLINE_USAGE = "Usage: deadline <description> /by <time>";
+    private static final String EVENT_USAGE = "Usage: event <description> /from <start> /to <end>";
 
     /**
      * Returns the command identified in a line of user input.
@@ -75,23 +80,19 @@ public class Parser {
     public Task parseDeadline(String input) throws AxiomException {
         String remainder = Command.DEADLINE.getArgument(input);
         if (remainder.isEmpty()) {
-            throw new AxiomException("A deadline needs a description and a /by time. "
-                    + "Usage: deadline <description> /by <time>");
+            throw new AxiomException("A deadline needs a description and a /by time. " + DEADLINE_USAGE);
         }
-        int byIndex = remainder.indexOf(" /by ");
+        int byIndex = remainder.indexOf(BY_DELIMITER);
         if (byIndex == -1) {
-            throw new AxiomException("A deadline must include /by. "
-                    + "Usage: deadline <description> /by <time>");
+            throw new AxiomException("A deadline must include /by. " + DEADLINE_USAGE);
         }
         String description = remainder.substring(0, byIndex).trim();
-        String by = remainder.substring(byIndex + 5).trim();
+        String by = remainder.substring(byIndex + BY_DELIMITER.length()).trim();
         if (description.isEmpty()) {
-            throw new AxiomException("A deadline needs a description. "
-                    + "Usage: deadline <description> /by <time>");
+            throw new AxiomException("A deadline needs a description. " + DEADLINE_USAGE);
         }
         if (by.isEmpty()) {
-            throw new AxiomException("A deadline needs a /by time. "
-                    + "Usage: deadline <description> /by <time>");
+            throw new AxiomException("A deadline needs a /by time. " + DEADLINE_USAGE);
         }
         return new Deadline(description, DateTimeParser.parse(by));
     }
@@ -106,29 +107,24 @@ public class Parser {
     public Task parseEvent(String input) throws AxiomException {
         String remainder = Command.EVENT.getArgument(input);
         if (remainder.isEmpty()) {
-            throw new AxiomException("An event needs a description, /from, and /to times. "
-                    + "Usage: event <description> /from <start> /to <end>");
+            throw new AxiomException("An event needs a description, /from, and /to times. " + EVENT_USAGE);
         }
-        int fromIndex = remainder.indexOf(" /from ");
-        int toIndex = remainder.indexOf(" /to ");
+        int fromIndex = remainder.indexOf(FROM_DELIMITER);
+        int toIndex = remainder.indexOf(TO_DELIMITER);
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-            throw new AxiomException("An event must include /from and /to. "
-                    + "Usage: event <description> /from <start> /to <end>");
+            throw new AxiomException("An event must include /from and /to. " + EVENT_USAGE);
         }
         String description = remainder.substring(0, fromIndex).trim();
-        String from = remainder.substring(fromIndex + 7, toIndex).trim();
-        String to = remainder.substring(toIndex + 5).trim();
+        String from = remainder.substring(fromIndex + FROM_DELIMITER.length(), toIndex).trim();
+        String to = remainder.substring(toIndex + TO_DELIMITER.length()).trim();
         if (description.isEmpty()) {
-            throw new AxiomException("An event needs a description. "
-                    + "Usage: event <description> /from <start> /to <end>");
+            throw new AxiomException("An event needs a description. " + EVENT_USAGE);
         }
         if (from.isEmpty()) {
-            throw new AxiomException("An event needs a /from time. "
-                    + "Usage: event <description> /from <start> /to <end>");
+            throw new AxiomException("An event needs a /from time. " + EVENT_USAGE);
         }
         if (to.isEmpty()) {
-            throw new AxiomException("An event needs a /to time. "
-                    + "Usage: event <description> /from <start> /to <end>");
+            throw new AxiomException("An event needs a /to time. " + EVENT_USAGE);
         }
         return new Event(description, DateTimeParser.parse(from), DateTimeParser.parse(to));
     }
