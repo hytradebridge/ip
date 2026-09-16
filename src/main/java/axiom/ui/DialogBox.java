@@ -21,6 +21,9 @@ import javafx.scene.text.Font;
  * and a label containing text from the speaker.
  */
 public class DialogBox extends HBox {
+    private static final double MAX_DIALOG_WIDTH = 320.0;
+    private static final String AXIOM_FONT_FAMILY = "Monospaced";
+    private static final double AXIOM_FONT_SIZE = 12;
     @FXML
     private Label dialog;
     @FXML
@@ -37,7 +40,7 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
-        dialog.setMaxWidth(320.0);
+        dialog.setMaxWidth(MAX_DIALOG_WIDTH);
         HBox.setHgrow(dialog, Priority.ALWAYS);
         displayPicture.setImage(img);
     }
@@ -46,9 +49,9 @@ public class DialogBox extends HBox {
      * Flips the dialog box such that the ImageView is on the left and text on the right.
      */
     private void flip() {
-        ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
-        Collections.reverse(tmp);
-        getChildren().setAll(tmp);
+        ObservableList<Node> children = FXCollections.observableArrayList(this.getChildren());
+        Collections.reverse(children);
+        getChildren().setAll(children);
         setAlignment(Pos.TOP_LEFT);
     }
 
@@ -71,10 +74,10 @@ public class DialogBox extends HBox {
      * @return Dialog box aligned to the left.
      */
     public static DialogBox getAxiomDialog(String text, Image img) {
-        DialogBox db = new DialogBox(text, img);
-        db.flip();
+        DialogBox dialogBox = new DialogBox(text, img);
+        dialogBox.flip();
         // Monospaced font keeps the ASCII banner and separator lines aligned.
-        db.dialog.setFont(Font.font("Monospaced", 12));
-        return db;
+        dialogBox.dialog.setFont(Font.font(AXIOM_FONT_FAMILY, AXIOM_FONT_SIZE));
+        return dialogBox;
     }
 }

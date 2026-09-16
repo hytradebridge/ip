@@ -1,11 +1,13 @@
 package axiom.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Contains the list of tasks and supports operations to modify it.
  */
-public class TaskList {
+public class TaskList implements Iterable<Task> {
     private final ArrayList<Task> tasks;
 
     /**
@@ -16,14 +18,13 @@ public class TaskList {
     }
 
     /**
-     * Creates a task list backed by the given collection.
+     * Creates a task list containing a copy of the given collection.
      *
      * @param tasks Existing tasks to wrap (typically loaded from storage).
      */
     public TaskList(ArrayList<Task> tasks) {
-        // Storage.load() always returns a list (possibly empty); null would be a caller bug.
         assert tasks != null : "Task collection should not be null";
-        this.tasks = tasks;
+        this.tasks = new ArrayList<>(tasks);
     }
 
     /**
@@ -71,12 +72,11 @@ public class TaskList {
     }
 
     /**
-     * Returns the underlying list of tasks.
-     *
-     * @return The backing {@link ArrayList} (used by {@link axiom.storage.Storage}).
+     * {@inheritDoc}
      */
-    public ArrayList<Task> getTasks() {
-        return tasks;
+    @Override
+    public Iterator<Task> iterator() {
+        return Collections.unmodifiableList(tasks).iterator();
     }
 
     /**
@@ -88,29 +88,6 @@ public class TaskList {
         assert isValidIndex(index) : "Mark index should be within list bounds";
         tasks.get(index).markAsDone();
         assert tasks.get(index).isDone() : "Task should be done after markAsDone";
-    }
-
-    /**
-     * Returns the one-based indices of tasks whose description contains the keyword.
-     *
-     * @param keyword Keyword to search for (case-insensitive). Must not be empty.
-     * @return One-based task numbers of matching tasks, in list order.
-     */
-    public ArrayList<Integer> findMatchingTaskNumbers(String keyword) {
-        // Parser.parseFindKeyword already rejected a missing keyword.
-        assert keyword != null && !keyword.isBlank() : "Find keyword should not be null or blank";
-        ArrayList<Integer> matchingNumbers = new ArrayList<>();
-        String lowerKeyword = keyword.toLowerCase();
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword)) {
-                matchingNumbers.add(i + 1);
-            }
-        }
-        for (int number : matchingNumbers) {
-            assert number >= 1 && number <= tasks.size()
-                    : "Matching task numbers should be valid 1-based indices";
-        }
-        return matchingNumbers;
     }
 
     /**
@@ -132,5 +109,23 @@ public class TaskList {
      */
     private boolean isValidIndex(int index) {
         return index >= 0 && index < tasks.size();
+    }
+
+    /**
+     * Returns the zero-based indexes of tasks whose description contains the keyword.
+     *
+     * @param keyword Keyword to search for (case-insensitive). Must not be empty.
+     * @return Zero-based indexes of matching tasks, in list order.
+     */
+    public ArrayList<Integer> findMatchingIndexes(String keyword) {
+        assert keyword != null && !keyword.isBlank() : "Find keyword should not be null or blank";
+        ArrayList<Integer> matchingIndexes = new ArrayList<>();
+        String lowerKeyword = keyword.toLowerCase();
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword)) {
+                matchingIndexes.add(i);
+            }
+        }
+        return matchingIndexes;
     }
 }

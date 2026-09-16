@@ -8,9 +8,10 @@ import axiom.parser.DateTimeParser;
  * Represents an event task with a start and end date or time.
  */
 public class Event extends Task {
+    private static final String TYPE_PREFIX = "[E]";
 
-    protected LocalDateTime from;
-    protected LocalDateTime to;
+    private final LocalDateTime from;
+    private final LocalDateTime to;
 
     /**
      * Creates a new event task.
@@ -53,7 +54,7 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + DateTimeParser.format(from)
+        return TYPE_PREFIX + super.toString() + " (from: " + DateTimeParser.format(from)
                 + " to: " + DateTimeParser.format(to) + ")";
     }
 }

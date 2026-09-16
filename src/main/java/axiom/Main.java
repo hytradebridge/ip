@@ -14,9 +14,10 @@ import axiom.ui.MainWindow;
  * A GUI for AXIOM using FXML.
  */
 public class Main extends Application {
-    private static final String DEFAULT_FILE_PATH = "data/axiom.txt";
+    private static final double MIN_WINDOW_HEIGHT = 600.0;
+    private static final double MIN_WINDOW_WIDTH = 400.0;
 
-    private final Axiom axiom = new Axiom(DEFAULT_FILE_PATH);
+    private final Axiom axiom = new Axiom(Axiom.DEFAULT_FILE_PATH);
 
     /**
      * {@inheritDoc}
@@ -25,12 +26,12 @@ public class Main extends Application {
     public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
-            AnchorPane ap = fxmlLoader.load();
-            Scene scene = new Scene(ap);
+            AnchorPane anchorPane = fxmlLoader.load();
+            Scene scene = new Scene(anchorPane);
             stage.setScene(scene);
             stage.setTitle("Axiom");
-            stage.setMinHeight(600.0);
-            stage.setMinWidth(400.0);
+            stage.setMinHeight(MIN_WINDOW_HEIGHT);
+            stage.setMinWidth(MIN_WINDOW_WIDTH);
             fxmlLoader.<MainWindow>getController().setAxiom(axiom);
             stage.show();
         } catch (IOException e) {

@@ -11,6 +11,7 @@ import axiom.task.TaskList;
  */
 public class Ui {
     private static final String LINE = "__________________________________________";
+    private static final String TASK_DETAIL_INDENT = "   ";
     private static final String BANNER = "     _    __  _____ ___  __  __ \n"
                                        + "    / \\   \\ \\/ /_ _/ _ \\|  \\/  |\n"
                                        + "   / _ \\   \\  / | | | | | |\\/| |\n"
@@ -30,10 +31,7 @@ public class Ui {
      * Displays the welcome banner and greeting.
      */
     public void showWelcome() {
-        System.out.println(BANNER);
-        System.out.println("Hello! I'm AXIOM.");
-        System.out.println("What can I do for you?");
-        System.out.println(LINE);
+        System.out.println(formatWelcome());
     }
 
     /**
@@ -44,12 +42,12 @@ public class Ui {
     }
 
     /**
-     * Returns the next command entered by the user.
+     * Displays a message to the user.
      *
-     * @return The command line entered by the user.
+     * @param message Text to display.
      */
-    public String readCommand() {
-        return scanner.nextLine();
+    public void showMessage(String message) {
+        System.out.println(message);
     }
 
     /**
@@ -62,11 +60,20 @@ public class Ui {
     }
 
     /**
-     * Returns the greeting shown in the GUI, including the ASCII banner and separator line.
+     * Returns the next command entered by the user.
      *
-     * @return Welcome text for the chatbot window.
+     * @return The command line entered by the user.
      */
-    public String formatGuiWelcome() {
+    public String readCommand() {
+        return scanner.nextLine();
+    }
+
+    /**
+     * Returns the welcome banner and greeting.
+     *
+     * @return Welcome text for the chatbot.
+     */
+    public String formatWelcome() {
         return BANNER + "\nHello! I'm AXIOM.\nWhat can I do for you?\n" + LINE;
     }
 
@@ -80,13 +87,6 @@ public class Ui {
     }
 
     /**
-     * Displays the goodbye message.
-     */
-    public void showGoodbye() {
-        System.out.println(formatGoodbye());
-    }
-
-    /**
      * Returns all tasks in the list with their one-based indices.
      *
      * @param tasks Task list to display.
@@ -95,48 +95,28 @@ public class Ui {
     public String formatTaskList(TaskList tasks) {
         StringBuilder builder = new StringBuilder(" Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            builder.append('\n').append(" ").append(i + 1).append('.').append(tasks.get(i));
+            appendNumberedTask(builder, i + 1, tasks.get(i));
         }
         return builder.toString();
-    }
-
-    /**
-     * Displays all tasks in the list with their one-based indices.
-     *
-     * @param tasks Task list to display.
-     */
-    public void showTaskList(TaskList tasks) {
-        System.out.println(formatTaskList(tasks));
     }
 
     /**
      * Returns tasks whose descriptions match the search keyword.
      *
      * @param tasks Task list to search.
-     * @param matchingNumbers One-based indices of matching tasks.
+     * @param matchingIndexes Zero-based indexes of matching tasks.
      * @return Formatted matching-task text.
      */
-    public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
+    public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingIndexes) {
         assert tasks != null : "Task list should not be null";
-        assert matchingNumbers != null : "Matching numbers should not be null";
+        assert matchingIndexes != null : "Matching indexes should not be null";
         StringBuilder builder = new StringBuilder(" Here are the matching tasks in your list:");
-        for (int number : matchingNumbers) {
-            // findMatchingTaskNumbers only returns 1-based indices that exist in the list.
-            assert number >= 1 && number <= tasks.size()
-                    : "Matching number should be a valid 1-based task index";
-            builder.append('\n').append(" ").append(number).append('.').append(tasks.get(number - 1));
+        for (int index : matchingIndexes) {
+            assert index >= 0 && index < tasks.size()
+                    : "Matching index should be a valid 0-based task index";
+            appendNumberedTask(builder, index + 1, tasks.get(index));
         }
         return builder.toString();
-    }
-
-    /**
-     * Displays tasks whose descriptions match the search keyword.
-     *
-     * @param tasks Task list to search.
-     * @param matchingNumbers One-based indices of matching tasks.
-     */
-    public void showMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
-        System.out.println(formatMatchingTasks(tasks, matchingNumbers));
     }
 
     /**
@@ -147,18 +127,8 @@ public class Ui {
      * @return Formatted add-task confirmation.
      */
     public String formatTaskAdded(Task task, int taskCount) {
-        return " Got it. I've added this task:\n   " + task
-                + "\n Now you have " + taskCount + " tasks in the list.";
-    }
-
-    /**
-     * Displays confirmation that a task was added.
-     *
-     * @param task The task that was added.
-     * @param taskCount Total number of tasks after the addition.
-     */
-    public void showTaskAdded(Task task, int taskCount) {
-        System.out.println(formatTaskAdded(task, taskCount));
+        return " Got it. I've added this task:" + formatIndentedTask(task)
+                + "\n" + formatTaskCount(taskCount);
     }
 
     /**
@@ -168,16 +138,7 @@ public class Ui {
      * @return Formatted mark confirmation.
      */
     public String formatMarked(Task task) {
-        return " Nice! I've marked this task as done:\n   " + task;
-    }
-
-    /**
-     * Displays confirmation that a task was marked as done.
-     *
-     * @param task The task that was marked.
-     */
-    public void showMarked(Task task) {
-        System.out.println(formatMarked(task));
+        return " Nice! I've marked this task as done:" + formatIndentedTask(task);
     }
 
     /**
@@ -187,16 +148,7 @@ public class Ui {
      * @return Formatted unmark confirmation.
      */
     public String formatUnmarked(Task task) {
-        return " OK, I've marked this task as not done yet:\n   " + task;
-    }
-
-    /**
-     * Displays confirmation that a task was marked as not done.
-     *
-     * @param task The task that was unmarked.
-     */
-    public void showUnmarked(Task task) {
-        System.out.println(formatUnmarked(task));
+        return " OK, I've marked this task as not done yet:" + formatIndentedTask(task);
     }
 
     /**
@@ -207,17 +159,38 @@ public class Ui {
      * @return Formatted delete confirmation.
      */
     public String formatDeleted(Task task, int taskCount) {
-        return " Noted. I've removed this task:\n   " + task
-                + "\n Now you have " + taskCount + " tasks in the list.";
+        return " Noted. I've removed this task:" + formatIndentedTask(task)
+                + "\n" + formatTaskCount(taskCount);
     }
 
     /**
-     * Displays confirmation that a task was deleted.
+     * Returns the line that reports how many tasks remain in the list.
      *
-     * @param task The task that was removed.
-     * @param taskCount Total number of tasks after the deletion.
+     * @param taskCount Current number of tasks.
+     * @return Formatted task-count text.
      */
-    public void showDeleted(Task task, int taskCount) {
-        System.out.println(formatDeleted(task, taskCount));
+    private String formatTaskCount(int taskCount) {
+        return " Now you have " + taskCount + " tasks in the list.";
+    }
+
+    /**
+     * Returns a task on its own indented line.
+     *
+     * @param task Task to display.
+     * @return Formatted task line.
+     */
+    private String formatIndentedTask(Task task) {
+        return "\n" + TASK_DETAIL_INDENT + task;
+    }
+
+    /**
+     * Appends a numbered task line to {@code builder}.
+     *
+     * @param builder Output being built.
+     * @param taskNumber One-based task number to display.
+     * @param task Task to display.
+     */
+    private void appendNumberedTask(StringBuilder builder, int taskNumber, Task task) {
+        builder.append('\n').append(" ").append(taskNumber).append('.').append(task);
     }
 }

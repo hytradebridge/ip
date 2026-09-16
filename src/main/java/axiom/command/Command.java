@@ -31,21 +31,25 @@ public enum Command {
     }
 
     /**
+     * Returns whether {@code input} is this command, with or without arguments.
+     *
+     * @param input Full command line from the user.
+     * @return {@code true} if the input is exactly the keyword or starts with the keyword and a space.
+     */
+    public boolean matches(String input) {
+        return input.equals(keyword) || input.startsWith(keyword + " ");
+    }
+
+    /**
      * Returns the argument portion of the user input after the command keyword.
      *
      * @param input Full command line from the user.
      * @return The argument text, or an empty string if none was provided.
      */
     public String getArgument(String input) {
-        // fromInput() already matched this command, so the line must start with its keyword.
         assert this != UNKNOWN : "UNKNOWN has no keyword from which to extract an argument";
-        assert input != null : "Command input should not be null";
-        assert input.equals(keyword) || input.startsWith(keyword + " ")
-                : "getArgument should only be used after this command was matched";
-        if (input.equals(keyword)) {
-            return "";
-        }
-        return input.substring(keyword.length() + 1).trim();
+        assert matches(input) : "getArgument should only be used after this command was matched";
+        return input.substring(keyword.length()).trim();
     }
 
     /**
@@ -59,7 +63,7 @@ public enum Command {
             if (command == UNKNOWN) {
                 continue;
             }
-            if (input.equals(command.keyword) || input.startsWith(command.keyword + " ")) {
+            if (command.matches(input)) {
                 return command;
             }
         }

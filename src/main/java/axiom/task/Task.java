@@ -4,8 +4,11 @@ package axiom.task;
  * Represents a task with a description and done status.
  */
 public class Task {
-    protected String description;
-    protected boolean isDone;
+    private static final String DONE_ICON = "X";
+    private static final String NOT_DONE_ICON = " ";
+
+    private final String description;
+    private boolean isDone;
 
     /**
      * Creates a new task that is initially not done.
@@ -44,7 +47,7 @@ public class Task {
      * @return {@code "X"} if done, or a single space if not done.
      */
     public String getStatusIcon() {
-        return (isDone ? "X" : " ");
+        return (isDone ? DONE_ICON : NOT_DONE_ICON);
     }
 
     /**

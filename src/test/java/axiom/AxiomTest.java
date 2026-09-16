@@ -25,7 +25,6 @@ class AxiomTest {
         assertTrue(welcome.contains("AXIOM"));
         assertTrue(welcome.contains("What can I do for you?"));
         assertTrue(welcome.contains("_____"));
-        assertTrue(welcome.contains("____________________________________________________________"));
     }
 
     @Test

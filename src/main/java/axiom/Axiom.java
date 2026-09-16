@@ -12,6 +12,9 @@ import axiom.ui.Ui;
  * Wires together {@link Ui}, {@link Storage}, {@link Parser}, and {@link TaskList}.
  */
 public class Axiom {
+    /** Default relative path of the task save file. */
+    public static final String DEFAULT_FILE_PATH = "data/axiom.txt";
+
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
@@ -53,7 +56,7 @@ public class Axiom {
             ui.showLine();
             String input = ui.readCommand();
             try {
-                System.out.println(execute(input));
+                ui.showMessage(execute(input));
                 if (isExit) {
                     ui.showLine();
                     break;
@@ -71,7 +74,7 @@ public class Axiom {
      * @return Welcome text for the chatbot window.
      */
     public String getWelcomeMessage() {
-        return ui.formatGuiWelcome();
+        return ui.formatWelcome();
     }
 
     /**
@@ -149,7 +152,7 @@ public class Axiom {
      */
     private String findTasks(String input) throws AxiomException {
         String keyword = parser.parseFindKeyword(input);
-        return ui.formatMatchingTasks(tasks, tasks.findMatchingTaskNumbers(keyword));
+        return ui.formatMatchingTasks(tasks, tasks.findMatchingIndexes(keyword));
     }
 
     /**
@@ -161,9 +164,10 @@ public class Axiom {
      */
     private String markTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.MARK, input, tasks.size());
-        tasks.markAsDone(taskNumber - 1);
+        int index = toZeroBasedIndex(taskNumber);
+        tasks.markAsDone(index);
         storage.save(tasks);
-        return ui.formatMarked(tasks.get(taskNumber - 1));
+        return ui.formatMarked(tasks.get(index));
     }
 
     /**
@@ -175,9 +179,10 @@ public class Axiom {
      */
     private String unmarkTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.UNMARK, input, tasks.size());
-        tasks.markAsNotDone(taskNumber - 1);
+        int index = toZeroBasedIndex(taskNumber);
+        tasks.markAsNotDone(index);
         storage.save(tasks);
-        return ui.formatUnmarked(tasks.get(taskNumber - 1));
+        return ui.formatUnmarked(tasks.get(index));
     }
 
     /**
@@ -189,7 +194,8 @@ public class Axiom {
      */
     private String deleteTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.DELETE, input, tasks.size());
-        Task removed = tasks.delete(taskNumber - 1);
+        int index = toZeroBasedIndex(taskNumber);
+        Task removed = tasks.delete(index);
         storage.save(tasks);
         return ui.formatDeleted(removed, tasks.size());
     }
@@ -208,11 +214,21 @@ public class Axiom {
     }
 
     /**
+     * Converts a one-based task number from the user into a list index.
+     *
+     * @param taskNumber One-based number shown to the user.
+     * @return Zero-based index into {@link TaskList}.
+     */
+    private int toZeroBasedIndex(int taskNumber) {
+        return taskNumber - 1;
+    }
+
+    /**
      * Runs AXIOM with the default data file path.
      *
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
-        new Axiom("data/axiom.txt").run();
+        new Axiom(DEFAULT_FILE_PATH).run();
     }
 }

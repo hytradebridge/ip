@@ -1,7 +1,6 @@
 package axiom.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +10,6 @@ import axiom.AxiomException;
 import axiom.command.Command;
 import axiom.task.Deadline;
 import axiom.task.Event;
-import axiom.task.Task;
 import axiom.task.Todo;
 
 class ParserTest {
@@ -72,9 +70,8 @@ class ParserTest {
 
     @Test
     void parseTodo_validInput_returnsTodo() throws AxiomException {
-        Task task = parser.parseTodo("todo read book");
-        assertInstanceOf(Todo.class, task);
-        assertEquals("read book", task.getDescription());
+        Todo todo = parser.parseTodo("todo read book");
+        assertEquals("read book", todo.getDescription());
     }
 
     @Test
@@ -87,9 +84,8 @@ class ParserTest {
 
     @Test
     void parseDeadline_validInput_returnsDeadline() throws AxiomException {
-        Task task = parser.parseDeadline("deadline return book /by 2019-06-06");
-        assertInstanceOf(Deadline.class, task);
-        assertEquals("return book", task.getDescription());
+        Deadline deadline = parser.parseDeadline("deadline return book /by 2019-06-06");
+        assertEquals("return book", deadline.getDescription());
     }
 
     @Test
@@ -133,10 +129,9 @@ class ParserTest {
 
     @Test
     void parseEvent_validInput_returnsEvent() throws AxiomException {
-        Task task = parser.parseEvent(
+        Event event = parser.parseEvent(
                 "event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600");
-        assertInstanceOf(Event.class, task);
-        assertEquals("project meeting", task.getDescription());
+        assertEquals("project meeting", event.getDescription());
     }
 
     @Test
