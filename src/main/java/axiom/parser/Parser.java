@@ -4,7 +4,6 @@ import axiom.AxiomException;
 import axiom.command.Command;
 import axiom.task.Deadline;
 import axiom.task.Event;
-import axiom.task.Task;
 import axiom.task.Todo;
 
 /**
@@ -60,7 +59,7 @@ public class Parser {
      * @return The parsed todo task.
      * @throws AxiomException If the description is missing.
      */
-    public Task parseTodo(String input) throws AxiomException {
+    public Todo parseTodo(String input) throws AxiomException {
         String description = requireNonEmpty(Command.TODO.getArgument(input),
                 "A todo needs a description. Usage: todo <description>");
         return new Todo(description);
@@ -73,7 +72,7 @@ public class Parser {
      * @return The parsed deadline task.
      * @throws AxiomException If the description or {@code /by} time is missing or invalid.
      */
-    public Task parseDeadline(String input) throws AxiomException {
+    public Deadline parseDeadline(String input) throws AxiomException {
         String remainder = requireNonEmpty(Command.DEADLINE.getArgument(input),
                 "A deadline needs a description and a /by time. " + DEADLINE_USAGE);
         int byIndex = remainder.indexOf(BY_DELIMITER);
@@ -94,7 +93,7 @@ public class Parser {
      * @return The parsed event task.
      * @throws AxiomException If the description, {@code /from}, or {@code /to} time is missing or invalid.
      */
-    public Task parseEvent(String input) throws AxiomException {
+    public Event parseEvent(String input) throws AxiomException {
         String remainder = requireNonEmpty(Command.EVENT.getArgument(input),
                 "An event needs a description, /from, and /to times. " + EVENT_USAGE);
         int fromIndex = remainder.indexOf(FROM_DELIMITER);
