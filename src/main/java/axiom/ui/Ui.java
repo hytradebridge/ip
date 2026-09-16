@@ -85,7 +85,7 @@ public class Ui {
     public String formatTaskList(TaskList tasks) {
         StringBuilder builder = new StringBuilder(" Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            builder.append('\n').append(" ").append(i + 1).append('.').append(tasks.get(i));
+            appendNumberedTask(builder, i + 1, tasks.get(i));
         }
         return builder.toString();
     }
@@ -100,7 +100,7 @@ public class Ui {
     public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
         StringBuilder builder = new StringBuilder(" Here are the matching tasks in your list:");
         for (int number : matchingNumbers) {
-            builder.append('\n').append(" ").append(number).append('.').append(tasks.get(number - 1));
+            appendNumberedTask(builder, number, tasks.get(number - 1));
         }
         return builder.toString();
     }
@@ -147,5 +147,16 @@ public class Ui {
     public String formatDeleted(Task task, int taskCount) {
         return " Noted. I've removed this task:\n   " + task
                 + "\n Now you have " + taskCount + " tasks in the list.";
+    }
+
+    /**
+     * Appends a numbered task line to {@code builder}.
+     *
+     * @param builder Output being built.
+     * @param taskNumber One-based task number to display.
+     * @param task Task to display.
+     */
+    private void appendNumberedTask(StringBuilder builder, int taskNumber, Task task) {
+        builder.append('\n').append(" ").append(taskNumber).append('.').append(task);
     }
 }
