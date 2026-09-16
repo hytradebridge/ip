@@ -111,7 +111,9 @@ public class Parser {
         }
         int fromIndex = remainder.indexOf(FROM_DELIMITER);
         int toIndex = remainder.indexOf(TO_DELIMITER);
-        if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
+        boolean hasFromAndTo = fromIndex != -1 && toIndex != -1;
+        boolean isFromBeforeTo = hasFromAndTo && fromIndex < toIndex;
+        if (!isFromBeforeTo) {
             throw new AxiomException("An event must include /from and /to. " + EVENT_USAGE);
         }
         String description = remainder.substring(0, fromIndex).trim();
