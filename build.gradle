@@ -38,6 +38,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    // Check programmer assumptions documented with assert during tests.
+    jvmArgs '-ea'
 
     testLogging {
         events 'passed', 'skipped', 'failed'
@@ -70,5 +72,7 @@ shadowJar {
 }
 
 run {
+    // Check programmer assumptions documented with assert during ./gradlew run.
+    jvmArgs '-ea'
     standardInput = System.in
 }

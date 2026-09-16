@@ -37,6 +37,11 @@ public enum Command {
      * @return The argument text, or an empty string if none was provided.
      */
     public String getArgument(String input) {
+        // fromInput() already matched this command, so the line must start with its keyword.
+        assert this != UNKNOWN : "UNKNOWN has no keyword from which to extract an argument";
+        assert input != null : "Command input should not be null";
+        assert input.equals(keyword) || input.startsWith(keyword + " ")
+                : "getArgument should only be used after this command was matched";
         if (input.equals(keyword)) {
             return "";
         }

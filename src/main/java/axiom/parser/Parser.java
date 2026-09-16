@@ -32,6 +32,10 @@ public class Parser {
      * @throws AxiomException If the argument is missing, non-numeric, or out of range.
      */
     public int parseTaskNumber(Command command, String input, int taskCount) throws AxiomException {
+        // Axiom only asks for a task number for mark, unmark, and delete.
+        assert command == Command.MARK || command == Command.UNMARK || command == Command.DELETE
+                : "parseTaskNumber is only for mark, unmark, and delete";
+        assert taskCount >= 0 : "Task count cannot be negative";
         String argument = command.getArgument(input);
         if (argument.isEmpty()) {
             throw new AxiomException("Please specify which task to " + command.getKeyword()

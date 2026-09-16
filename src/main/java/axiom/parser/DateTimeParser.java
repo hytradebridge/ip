@@ -85,6 +85,7 @@ public class DateTimeParser {
      * @return A human-readable date or date-time string.
      */
     public static String format(LocalDateTime dateTime) {
+        assert dateTime != null : "Cannot format a null date-time";
         if (dateTime.getHour() == 0 && dateTime.getMinute() == 0) {
             return dateTime.format(DISPLAY_DATE);
         }
@@ -98,6 +99,7 @@ public class DateTimeParser {
      * @return An ISO-8601 string suitable for persistence.
      */
     public static String formatStored(LocalDateTime dateTime) {
+        assert dateTime != null : "Cannot store a null date-time";
         return dateTime.toString();
     }
 }

@@ -25,6 +25,7 @@ public class Axiom {
      * @param filePath Path to the task data file (e.g. {@code data/axiom.txt}).
      */
     public Axiom(String filePath) {
+        assert filePath != null && !filePath.isBlank() : "Data file path should not be empty";
         ui = new Ui();
         storage = new Storage(filePath);
         parser = new Parser();
@@ -113,6 +114,7 @@ public class Axiom {
      * @throws AxiomException If the command is invalid or cannot be executed.
      */
     private String execute(String input) throws AxiomException {
+        assert input != null : "Command input should not be null";
         switch (parser.getCommand(input)) {
         case BYE:
             isExit = true;

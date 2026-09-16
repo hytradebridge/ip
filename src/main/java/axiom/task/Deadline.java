@@ -19,6 +19,8 @@ public class Deadline extends Task {
      */
     public Deadline(String description, LocalDateTime by) {
         super(description);
+        // DateTimeParser always returns a parsed value; a null /by means a caller bug.
+        assert by != null : "Deadline /by date-time should not be null";
         this.by = by;
     }
 

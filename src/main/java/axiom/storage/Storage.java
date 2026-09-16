@@ -26,6 +26,7 @@ public class Storage {
      * @param filePath Path to the task data file (e.g. {@code data/axiom.txt}).
      */
     public Storage(String filePath) {
+        assert filePath != null && !filePath.isBlank() : "Storage file path should not be empty";
         this.filePath = Path.of(filePath);
     }
 
@@ -69,6 +70,7 @@ public class Storage {
      * @throws AxiomException If the file path is invalid or cannot be written.
      */
     public void save(TaskList tasks) throws AxiomException {
+        assert tasks != null : "Cannot save a null task list";
         ensureWritablePath();
         try {
             Path parent = filePath.getParent();
@@ -192,6 +194,10 @@ public class Storage {
      * @return A single line suitable for writing to the data file.
      */
     private String formatTask(Task task) {
+        // Only Todo, Deadline, and Event exist; any other type is a programming error.
+        assert task != null : "Cannot serialize a null task";
+        assert task instanceof Todo || task instanceof Deadline || task instanceof Event
+                : "All persistable tasks should be Todo, Deadline, or Event";
         String status = task.isDone() ? "1" : "0";
         if (task instanceof Todo) {
             return "T | " + status + " | " + task.getDescription();
