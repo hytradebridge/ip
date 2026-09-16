@@ -1,35 +1,27 @@
 package axiom.ui;
 
 import java.io.IOException;
-import java.util.Collections;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.text.Font;
+import javafx.scene.layout.Region;
 
 /**
- * Represents a dialog box consisting of an ImageView to represent the speaker's face
- * and a label containing text from the speaker.
+ * Represents a chat row that shows a user command, an AXIOM reply, or an error.
+ * User commands are compact and right-aligned; AXIOM replies use the remaining width on the left.
  */
 public class DialogBox extends HBox {
-    private static final double MAX_DIALOG_WIDTH = 320.0;
-    private static final String AXIOM_FONT_FAMILY = "Monospaced";
-    private static final double AXIOM_FONT_SIZE = 12;
+    private static final double USER_BUBBLE_WIDTH_RATIO = 0.78;
+    private static final double AXIOM_BUBBLE_INSETS = 4.0;
+
     @FXML
     private Label dialog;
-    @FXML
-    private ImageView displayPicture;
 
-    private DialogBox(String text, Image img) {
+    private DialogBox(String text, String styleClass, Pos alignment, boolean isUserBubble) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -39,45 +31,58 @@ public class DialogBox extends HBox {
             throw new RuntimeException("Failed to load DialogBox.fxml", e);
         }
 
+        setAlignment(alignment);
+        setMinWidth(0);
+        setMinHeight(Region.USE_PREF_SIZE);
+        setFillHeight(false);
         dialog.setText(text);
-        dialog.setMaxWidth(MAX_DIALOG_WIDTH);
-        HBox.setHgrow(dialog, Priority.ALWAYS);
-        displayPicture.setImage(img);
+        dialog.getStyleClass().add(styleClass);
+        bindBubbleWidth(isUserBubble);
     }
 
     /**
-     * Flips the dialog box such that the ImageView is on the left and text on the right.
-     */
-    private void flip() {
-        ObservableList<Node> children = FXCollections.observableArrayList(this.getChildren());
-        Collections.reverse(children);
-        getChildren().setAll(children);
-        setAlignment(Pos.TOP_LEFT);
-    }
-
-    /**
-     * Returns a dialog box for a message sent by the user.
+     * Binds the bubble's wrap width to this row so text reflows when the window is resized.
      *
-     * @param text Message text.
-     * @param img User display picture.
-     * @return Dialog box aligned to the right.
+     * @param isUserBubble Whether this bubble should stay compact on the right.
      */
-    public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+    private void bindBubbleWidth(boolean isUserBubble) {
+        if (isUserBubble) {
+            dialog.maxWidthProperty().bind(widthProperty().multiply(USER_BUBBLE_WIDTH_RATIO));
+            return;
+        }
+
+        dialog.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(dialog, Priority.ALWAYS);
+        dialog.prefWidthProperty().bind(widthProperty().subtract(AXIOM_BUBBLE_INSETS));
     }
 
     /**
-     * Returns a dialog box for a reply from AXIOM.
+     * Returns a compact, right-aligned dialog for a command typed by the user.
+     *
+     * @param text Command text.
+     * @return User dialog box.
+     */
+    public static DialogBox getUserDialog(String text) {
+        return new DialogBox(text, "user-bubble", Pos.TOP_RIGHT, true);
+    }
+
+    /**
+     * Returns a full-width, left-aligned dialog for a reply from AXIOM.
      *
      * @param text Reply text.
-     * @param img AXIOM display picture.
-     * @return Dialog box aligned to the left.
+     * @return AXIOM dialog box.
      */
-    public static DialogBox getAxiomDialog(String text, Image img) {
-        DialogBox dialogBox = new DialogBox(text, img);
-        dialogBox.flip();
-        // Monospaced font keeps the ASCII banner and separator lines aligned.
-        dialogBox.dialog.setFont(Font.font(AXIOM_FONT_FAMILY, AXIOM_FONT_SIZE));
-        return dialogBox;
+    public static DialogBox getAxiomDialog(String text) {
+        return new DialogBox(text.strip(), "axiom-bubble", Pos.TOP_LEFT, false);
+    }
+
+    /**
+     * Returns a left-aligned dialog that highlights an error.
+     *
+     * @param text Error description.
+     * @return Error dialog box.
+     */
+    public static DialogBox getErrorDialog(String text) {
+        return new DialogBox(text.strip(), "error-bubble", Pos.TOP_LEFT, false);
     }
 }

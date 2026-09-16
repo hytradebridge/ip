@@ -81,6 +81,16 @@ public class Ui {
     }
 
     /**
+     * Returns a compact welcome greeting for the GUI.
+     * Omits the ASCII banner so the chat pane is used for conversation, not decoration.
+     *
+     * @return Welcome text without the ASCII banner.
+     */
+    public String formatGuiWelcome() {
+        return "Hello! I'm AXIOM.\nWhat can I do for you?";
+    }
+
+    /**
      * Returns the goodbye message.
      *
      * @return Goodbye text.

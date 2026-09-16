@@ -69,12 +69,21 @@ public class Axiom {
     }
 
     /**
-     * Returns the greeting shown when the GUI starts.
+     * Returns the greeting shown when the CLI starts.
      *
-     * @return Welcome text for the chatbot window.
+     * @return Welcome text for the chatbot, including the ASCII banner.
      */
     public String getWelcomeMessage() {
         return ui.formatWelcome();
+    }
+
+    /**
+     * Returns a compact greeting for the GUI, without the ASCII banner.
+     *
+     * @return Welcome text for the chatbot window.
+     */
+    public String getGuiWelcomeMessage() {
+        return ui.formatGuiWelcome();
     }
 
     /**
@@ -99,13 +108,23 @@ public class Axiom {
      * Generates a response for the user's chat message.
      *
      * @param input Raw command line from the user.
-     * @return Reply to show in the GUI, including error messages.
+     * @return Reply text, including error messages.
      */
     public String getResponse(String input) {
+        return getReply(input).getMessage();
+    }
+
+    /**
+     * Generates a reply for the user's chat message, including whether it is an error.
+     *
+     * @param input Raw command line from the user.
+     * @return Reply to show in the GUI.
+     */
+    public AxiomReply getReply(String input) {
         try {
-            return execute(input);
+            return AxiomReply.success(execute(input));
         } catch (AxiomException e) {
-            return e.getMessage();
+            return AxiomReply.error(e.getMessage());
         }
     }
 

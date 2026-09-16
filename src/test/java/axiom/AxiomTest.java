@@ -28,6 +28,14 @@ class AxiomTest {
     }
 
     @Test
+    void getGuiWelcomeMessage_newSession_omitsAsciiBanner() {
+        String welcome = axiom.getGuiWelcomeMessage();
+        assertTrue(welcome.contains("AXIOM"));
+        assertTrue(welcome.contains("What can I do for you?"));
+        assertFalse(welcome.contains("_____"));
+    }
+
+    @Test
     void getResponse_todoCommand_returnsAddedMessage() {
         String response = axiom.getResponse("todo read book");
         assertTrue(response.contains("Got it. I've added this task:"));
@@ -49,6 +57,20 @@ class AxiomTest {
         String response = axiom.getResponse("blargh");
         assertTrue(response.contains("Sorry, I don't understand that command."));
         assertFalse(axiom.isExit());
+    }
+
+    @Test
+    void getReply_unknownCommand_isError() {
+        AxiomReply reply = axiom.getReply("blargh");
+        assertTrue(reply.isError());
+        assertTrue(reply.getMessage().contains("Sorry, I don't understand that command."));
+    }
+
+    @Test
+    void getReply_todoCommand_isSuccess() {
+        AxiomReply reply = axiom.getReply("todo read book");
+        assertFalse(reply.isError());
+        assertTrue(reply.getMessage().contains("Got it. I've added this task:"));
     }
 
     @Test
