@@ -8,6 +8,7 @@ import axiom.parser.DateTimeParser;
  * Represents a deadline task that must be done by a specific date or time.
  */
 public class Deadline extends Task {
+    private static final String TYPE_PREFIX = "[D]";
 
     private final LocalDateTime by;
 
@@ -38,6 +39,6 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + DateTimeParser.format(by) + ")";
+        return TYPE_PREFIX + super.toString() + " (by: " + DateTimeParser.format(by) + ")";
     }
 }

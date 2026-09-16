@@ -4,6 +4,7 @@ package axiom.task;
  * Represents a todo task without any date or time attached.
  */
 public class Todo extends Task {
+    private static final String TYPE_PREFIX = "[T]";
 
     /**
      * Creates a new todo with the given description.
@@ -21,6 +22,6 @@ public class Todo extends Task {
      */
     @Override
     public String toString() {
-        return "[T]" + super.toString();
+        return TYPE_PREFIX + super.toString();
     }
 }
