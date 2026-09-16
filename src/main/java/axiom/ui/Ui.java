@@ -30,10 +30,7 @@ public class Ui {
      * Displays the welcome banner and greeting.
      */
     public void showWelcome() {
-        System.out.println(BANNER);
-        System.out.println("Hello! I'm AXIOM.");
-        System.out.println("What can I do for you?");
-        System.out.println(LINE);
+        System.out.println(formatGuiWelcome());
     }
 
     /**
