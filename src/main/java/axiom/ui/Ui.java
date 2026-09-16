@@ -11,6 +11,7 @@ import axiom.task.TaskList;
  */
 public class Ui {
     private static final String LINE = "__________________________________________";
+    private static final String TASK_DETAIL_INDENT = "   ";
     private static final String BANNER = "     _    __  _____ ___  __  __ \n"
                                        + "    / \\   \\ \\/ /_ _/ _ \\|  \\/  |\n"
                                        + "   / _ \\   \\  / | | | | | |\\/| |\n"
@@ -122,7 +123,7 @@ public class Ui {
      * @return Formatted add-task confirmation.
      */
     public String formatTaskAdded(Task task, int taskCount) {
-        return " Got it. I've added this task:\n   " + task
+        return " Got it. I've added this task:" + formatIndentedTask(task)
                 + "\n" + formatTaskCount(taskCount);
     }
 
@@ -133,7 +134,7 @@ public class Ui {
      * @return Formatted mark confirmation.
      */
     public String formatMarked(Task task) {
-        return " Nice! I've marked this task as done:\n   " + task;
+        return " Nice! I've marked this task as done:" + formatIndentedTask(task);
     }
 
     /**
@@ -143,7 +144,7 @@ public class Ui {
      * @return Formatted unmark confirmation.
      */
     public String formatUnmarked(Task task) {
-        return " OK, I've marked this task as not done yet:\n   " + task;
+        return " OK, I've marked this task as not done yet:" + formatIndentedTask(task);
     }
 
     /**
@@ -154,7 +155,7 @@ public class Ui {
      * @return Formatted delete confirmation.
      */
     public String formatDeleted(Task task, int taskCount) {
-        return " Noted. I've removed this task:\n   " + task
+        return " Noted. I've removed this task:" + formatIndentedTask(task)
                 + "\n" + formatTaskCount(taskCount);
     }
 
@@ -166,6 +167,16 @@ public class Ui {
      */
     private String formatTaskCount(int taskCount) {
         return " Now you have " + taskCount + " tasks in the list.";
+    }
+
+    /**
+     * Returns a task on its own indented line.
+     *
+     * @param task Task to display.
+     * @return Formatted task line.
+     */
+    private String formatIndentedTask(Task task) {
+        return "\n" + TASK_DETAIL_INDENT + task;
     }
 
     /**
