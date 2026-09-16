@@ -9,8 +9,8 @@ import axiom.parser.DateTimeParser;
  */
 public class Event extends Task {
 
-    protected LocalDateTime from;
-    protected LocalDateTime to;
+    private final LocalDateTime from;
+    private final LocalDateTime to;
 
     /**
      * Creates a new event task.

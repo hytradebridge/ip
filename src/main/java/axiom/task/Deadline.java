@@ -9,7 +9,7 @@ import axiom.parser.DateTimeParser;
  */
 public class Deadline extends Task {
 
-    protected LocalDateTime by;
+    private final LocalDateTime by;
 
     /**
      * Creates a new deadline task.

@@ -7,8 +7,8 @@ public class Task {
     private static final String DONE_ICON = "X";
     private static final String NOT_DONE_ICON = " ";
 
-    protected String description;
-    protected boolean isDone;
+    private String description;
+    private boolean isDone;
 
     /**
      * Creates a new task that is initially not done.
