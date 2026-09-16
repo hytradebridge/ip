@@ -123,7 +123,7 @@ public class Ui {
      */
     public String formatTaskAdded(Task task, int taskCount) {
         return " Got it. I've added this task:\n   " + task
-                + "\n Now you have " + taskCount + " tasks in the list.";
+                + "\n" + formatTaskCount(taskCount);
     }
 
     /**
@@ -155,7 +155,17 @@ public class Ui {
      */
     public String formatDeleted(Task task, int taskCount) {
         return " Noted. I've removed this task:\n   " + task
-                + "\n Now you have " + taskCount + " tasks in the list.";
+                + "\n" + formatTaskCount(taskCount);
+    }
+
+    /**
+     * Returns the line that reports how many tasks remain in the list.
+     *
+     * @param taskCount Current number of tasks.
+     * @return Formatted task-count text.
+     */
+    private String formatTaskCount(int taskCount) {
+        return " Now you have " + taskCount + " tasks in the list.";
     }
 
     /**
