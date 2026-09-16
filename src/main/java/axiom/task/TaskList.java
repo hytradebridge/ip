@@ -82,6 +82,15 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
+     * Marks the task at the given index as not done.
+     *
+     * @param index Zero-based index of the task.
+     */
+    public void markAsNotDone(int index) {
+        tasks.get(index).markAsNotDone();
+    }
+
+    /**
      * Returns the zero-based indexes of tasks whose description contains the keyword.
      *
      * @param keyword Keyword to search for (case-insensitive).
@@ -96,14 +105,5 @@ public class TaskList implements Iterable<Task> {
             }
         }
         return matchingIndexes;
-    }
-
-    /**
-     * Marks the task at the given index as not done.
-     *
-     * @param index Zero-based index of the task.
-     */
-    public void markAsNotDone(int index) {
-        tasks.get(index).markAsNotDone();
     }
 }
