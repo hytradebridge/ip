@@ -196,7 +196,7 @@ public class Storage {
      * @return A formatted exception ready to throw.
      */
     private AxiomException formatError(int lineNumber, String details) {
-        return new AxiomException("Problem in data/axiom.txt at line " + lineNumber + ": " + details);
+        return new AxiomException("Problem in " + filePath + " at line " + lineNumber + ": " + details);
     }
 
     /**
