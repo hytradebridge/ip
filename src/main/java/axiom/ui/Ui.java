@@ -2,6 +2,9 @@ package axiom.ui;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import axiom.task.Task;
 import axiom.task.TaskList;
@@ -93,11 +96,11 @@ public class Ui {
      * @return Formatted task list text.
      */
     public String formatTaskList(TaskList tasks) {
-        StringBuilder builder = new StringBuilder(" Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            appendNumberedTask(builder, i + 1, tasks.get(i));
-        }
-        return builder.toString();
+        return Stream.concat(
+                Stream.of(" Here are the tasks in your list:"),
+                IntStream.range(0, tasks.size())
+                        .mapToObj(i -> formatNumberedTask(i + 1, tasks.get(i))))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
@@ -108,11 +111,11 @@ public class Ui {
      * @return Formatted matching-task text.
      */
     public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingIndexes) {
-        StringBuilder builder = new StringBuilder(" Here are the matching tasks in your list:");
-        for (int index : matchingIndexes) {
-            appendNumberedTask(builder, index + 1, tasks.get(index));
-        }
-        return builder.toString();
+        return Stream.concat(
+                Stream.of(" Here are the matching tasks in your list:"),
+                matchingIndexes.stream()
+                        .map(index -> formatNumberedTask(index + 1, tasks.get(index))))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
@@ -180,13 +183,13 @@ public class Ui {
     }
 
     /**
-     * Appends a numbered task line to {@code builder}.
+     * Returns a numbered task line for list displays.
      *
-     * @param builder Output being built.
      * @param taskNumber One-based task number to display.
      * @param task Task to display.
+     * @return Formatted numbered task line.
      */
-    private void appendNumberedTask(StringBuilder builder, int taskNumber, Task task) {
-        builder.append('\n').append(" ").append(taskNumber).append('.').append(task);
+    private String formatNumberedTask(int taskNumber, Task task) {
+        return " " + taskNumber + "." + task;
     }
 }

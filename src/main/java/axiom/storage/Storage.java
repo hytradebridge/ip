@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 import axiom.AxiomException;
 import axiom.parser.DateTimeParser;
@@ -89,10 +90,9 @@ public class Storage {
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            ArrayList<String> lines = new ArrayList<>();
-            for (Task task : tasks) {
-                lines.add(formatTask(task));
-            }
+            List<String> lines = StreamSupport.stream(tasks.spliterator(), false)
+                    .map(this::formatTask)
+                    .toList();
             Files.write(filePath, lines);
         } catch (IOException e) {
             throw new AxiomException("Could not save tasks to " + filePath + ".");
