@@ -12,6 +12,9 @@ import axiom.ui.Ui;
  * Wires together {@link Ui}, {@link Storage}, {@link Parser}, and {@link TaskList}.
  */
 public class Axiom {
+    /** Default relative path of the task save file. */
+    public static final String DEFAULT_FILE_PATH = "data/axiom.txt";
+
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
@@ -211,6 +214,6 @@ public class Axiom {
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
-        new Axiom("data/axiom.txt").run();
+        new Axiom(DEFAULT_FILE_PATH).run();
     }
 }
