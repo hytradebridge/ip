@@ -48,11 +48,23 @@ class TaskListTest {
     }
 
     @Test
-    void getTasks_returnsInternalList() {
+    void iterator_containsAddedTasks() {
         taskList.add(firstTask);
-        ArrayList<Task> tasks = taskList.getTasks();
-        assertEquals(1, tasks.size());
-        assertEquals(firstTask, tasks.get(0));
+        ArrayList<Task> iterated = new ArrayList<>();
+        for (Task task : taskList) {
+            iterated.add(task);
+        }
+        assertEquals(1, iterated.size());
+        assertEquals(firstTask, iterated.get(0));
+    }
+
+    @Test
+    void constructor_withExistingList_doesNotAliasCallerList() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        tasks.add(firstTask);
+        TaskList loadedList = new TaskList(tasks);
+        tasks.add(secondTask);
+        assertEquals(1, loadedList.size());
     }
 
     @Test

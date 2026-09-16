@@ -1,11 +1,13 @@
 package axiom.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Contains the list of tasks and supports operations to modify it.
  */
-public class TaskList {
+public class TaskList implements Iterable<Task> {
     private final ArrayList<Task> tasks;
 
     /**
@@ -16,12 +18,12 @@ public class TaskList {
     }
 
     /**
-     * Creates a task list backed by the given collection.
+     * Creates a task list containing a copy of the given collection.
      *
      * @param tasks Existing tasks to wrap (typically loaded from storage).
      */
     public TaskList(ArrayList<Task> tasks) {
-        this.tasks = tasks;
+        this.tasks = new ArrayList<>(tasks);
     }
 
     /**
@@ -63,12 +65,11 @@ public class TaskList {
     }
 
     /**
-     * Returns the underlying list of tasks.
-     *
-     * @return The backing {@link ArrayList} (used by {@link axiom.storage.Storage}).
+     * {@inheritDoc}
      */
-    public ArrayList<Task> getTasks() {
-        return tasks;
+    @Override
+    public Iterator<Task> iterator() {
+        return Collections.unmodifiableList(tasks).iterator();
     }
 
     /**

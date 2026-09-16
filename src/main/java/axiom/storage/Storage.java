@@ -90,7 +90,7 @@ public class Storage {
                 Files.createDirectories(parent);
             }
             ArrayList<String> lines = new ArrayList<>();
-            for (Task task : tasks.getTasks()) {
+            for (Task task : tasks) {
                 lines.add(formatTask(task));
             }
             Files.write(filePath, lines);
