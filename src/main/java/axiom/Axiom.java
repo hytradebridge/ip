@@ -122,6 +122,8 @@ public class Axiom {
             return ui.formatGoodbye();
         case LIST:
             return ui.formatTaskList(tasks);
+        case SORT:
+            return sortTasks();
         case FIND:
             return findTasks(input);
         case MARK:
@@ -139,6 +141,18 @@ public class Axiom {
         default:
             throw new AxiomException("Sorry, I don't understand that command.");
         }
+    }
+
+    /**
+     * Sorts tasks chronologically and persists the new order.
+     *
+     * @return Formatted sorted task list.
+     * @throws AxiomException If the task list cannot be saved.
+     */
+    private String sortTasks() throws AxiomException {
+        tasks.sortChronologically();
+        storage.save(tasks);
+        return ui.formatSortedTaskList(tasks);
     }
 
     /**

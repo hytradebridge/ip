@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -114,5 +115,55 @@ class TaskListTest {
     void findMatchingIndexes_noMatch_returnsEmptyList() {
         taskList.add(firstTask);
         assertTrue(taskList.findMatchingIndexes("xyz").isEmpty());
+    }
+
+    @Test
+    void sortChronologically_deadlinesOutOfOrder_ordersByDate() {
+        Deadline later = new Deadline("later", LocalDateTime.of(2019, 10, 15, 0, 0));
+        Deadline earlier = new Deadline("earlier", LocalDateTime.of(2019, 6, 6, 0, 0));
+        taskList.add(later);
+        taskList.add(earlier);
+
+        taskList.sortChronologically();
+
+        assertEquals(earlier, taskList.get(0));
+        assertEquals(later, taskList.get(1));
+    }
+
+    @Test
+    void sortChronologically_mixedTypes_placesTodosAfterDatedTasks() {
+        Todo todo = new Todo("read book");
+        Event event = new Event("meeting",
+                LocalDateTime.of(2019, 8, 6, 14, 0),
+                LocalDateTime.of(2019, 8, 6, 16, 0));
+        Deadline deadline = new Deadline("homework", LocalDateTime.of(2019, 6, 6, 0, 0));
+        taskList.add(todo);
+        taskList.add(event);
+        taskList.add(deadline);
+
+        taskList.sortChronologically();
+
+        assertEquals(deadline, taskList.get(0));
+        assertEquals(event, taskList.get(1));
+        assertEquals(todo, taskList.get(2));
+    }
+
+    @Test
+    void sortChronologically_sameDate_keepsRelativeOrder() {
+        Deadline first = new Deadline("first", LocalDateTime.of(2019, 6, 6, 0, 0));
+        Deadline second = new Deadline("second", LocalDateTime.of(2019, 6, 6, 0, 0));
+        taskList.add(first);
+        taskList.add(second);
+
+        taskList.sortChronologically();
+
+        assertEquals(first, taskList.get(0));
+        assertEquals(second, taskList.get(1));
+    }
+
+    @Test
+    void sortChronologically_emptyList_remainsEmpty() {
+        taskList.sortChronologically();
+        assertEquals(0, taskList.size());
     }
 }

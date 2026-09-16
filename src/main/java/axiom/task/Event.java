@@ -1,6 +1,7 @@
 package axiom.task;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import axiom.parser.DateTimeParser;
 
@@ -42,6 +43,14 @@ public class Event extends Task {
      */
     public LocalDateTime getTo() {
         return to;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<LocalDateTime> getChronologicalDate() {
+        return Optional.of(from);
     }
 
     /**

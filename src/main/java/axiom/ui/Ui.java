@@ -13,7 +13,7 @@ import axiom.task.TaskList;
  * Represents a component that handles interactions with the user via standard input and output.
  */
 public class Ui {
-    private static final String LINE = "__________________________________________";
+    private static final String LINE = "____________________________________________________________";
     private static final String TASK_DETAIL_INDENT = "   ";
     private static final String BANNER = "     _    __  _____ ___  __  __ \n"
                                        + "    / \\   \\ \\/ /_ _/ _ \\|  \\/  |\n"
@@ -96,11 +96,17 @@ public class Ui {
      * @return Formatted task list text.
      */
     public String formatTaskList(TaskList tasks) {
-        return Stream.concat(
-                Stream.of(" Here are the tasks in your list:"),
-                IntStream.range(0, tasks.size())
-                        .mapToObj(i -> formatNumberedTask(i + 1, tasks.get(i))))
-                .collect(Collectors.joining("\n"));
+        return formatNumberedTasks(" Here are the tasks in your list:", tasks);
+    }
+
+    /**
+     * Returns all tasks after they have been sorted chronologically.
+     *
+     * @param tasks Sorted task list to display.
+     * @return Formatted sorted task list text.
+     */
+    public String formatSortedTaskList(TaskList tasks) {
+        return formatNumberedTasks(" OK, I've sorted your tasks chronologically:", tasks);
     }
 
     /**
@@ -160,6 +166,21 @@ public class Ui {
     public String formatDeleted(Task task, int taskCount) {
         return " Noted. I've removed this task:" + formatIndentedTask(task)
                 + "\n" + formatTaskCount(taskCount);
+    }
+
+    /**
+     * Returns a header followed by numbered task lines.
+     *
+     * @param header First line of the display.
+     * @param tasks Tasks to number and display.
+     * @return Formatted header and numbered tasks.
+     */
+    private String formatNumberedTasks(String header, TaskList tasks) {
+        return Stream.concat(
+                Stream.of(header),
+                IntStream.range(0, tasks.size())
+                        .mapToObj(i -> formatNumberedTask(i + 1, tasks.get(i))))
+                .collect(Collectors.joining("\n"));
     }
 
     /**

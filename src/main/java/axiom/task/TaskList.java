@@ -2,6 +2,7 @@ package axiom.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -90,6 +91,17 @@ public class TaskList implements Iterable<Task> {
      */
     public void markAsNotDone(int index) {
         tasks.get(index).markAsNotDone();
+    }
+
+    /**
+     * Sorts tasks in chronological order.
+     * Deadlines use their {@code /by} time, events use their {@code /from} time, and tasks
+     * without a date appear after dated tasks while keeping their relative order.
+     */
+    public void sortChronologically() {
+        tasks.sort(Comparator.comparing(
+                (Task task) -> task.getChronologicalDate().orElse(null),
+                Comparator.nullsLast(Comparator.naturalOrder())));
     }
 
     /**

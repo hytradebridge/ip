@@ -23,6 +23,7 @@ class ParserTest {
     @Test
     void getCommand_validInput_returnsCommand() {
         assertEquals(Command.LIST, parser.getCommand("list"));
+        assertEquals(Command.SORT, parser.getCommand("sort"));
         assertEquals(Command.TODO, parser.getCommand("todo read book"));
     }
 

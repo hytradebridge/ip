@@ -1,5 +1,8 @@
 package axiom.task;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 /**
  * Represents a task with a description and done status.
  */
@@ -59,6 +62,16 @@ public class Task {
      */
     public void markAsNotDone() {
         isDone = false;
+    }
+
+    /**
+     * Returns the date used when ordering this task chronologically.
+     * Tasks without a date return an empty result.
+     *
+     * @return The chronological date, or empty if this task has none.
+     */
+    public Optional<LocalDateTime> getChronologicalDate() {
+        return Optional.empty();
     }
 
     /**

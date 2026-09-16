@@ -8,6 +8,7 @@ import java.util.Arrays;
 public enum Command {
     BYE("bye"),
     LIST("list"),
+    SORT("sort"),
     FIND("find"),
     MARK("mark"),
     UNMARK("unmark"),
