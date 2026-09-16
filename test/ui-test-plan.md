@@ -934,3 +934,80 @@ ____________________________________________________________
 
 ```
 
+---
+
+## Test Case 23: Sort tasks chronologically
+
+**Aim:** Verify that `sort` reorders deadlines and events by date, places todos last, persists the new order, and that `list` then shows the same order.
+
+**Inputs:**
+```
+todo read book
+deadline return book /by 2019-10-15
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
+deadline homework /by 2019-06-06
+sort
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Oct 15 2019)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] homework (by: Jun 06 2019)
+ Now you have 4 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ OK, I've sorted your tasks chronologically:
+ 1.[D][ ] homework (by: Jun 06 2019)
+ 2.[E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
+ 3.[D][ ] return book (by: Oct 15 2019)
+ 4.[T][ ] read book
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] homework (by: Jun 06 2019)
+ 2.[E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
+ 3.[D][ ] return book (by: Oct 15 2019)
+ 4.[T][ ] read book
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+D | 0 | homework | 2019-06-06T00:00
+E | 0 | project meeting | 2019-08-06T14:00 to 2019-08-06T16:00
+D | 0 | return book | 2019-10-15T00:00
+T | 0 | read book
+
+```
+

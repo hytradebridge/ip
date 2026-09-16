@@ -2,7 +2,10 @@ package axiom.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Contains the list of tasks and supports operations to modify it.
@@ -112,6 +115,17 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
+     * Sorts tasks in chronological order.
+     * Deadlines use their {@code /by} time, events use their {@code /from} time, and tasks
+     * without a date appear after dated tasks while keeping their relative order.
+     */
+    public void sortChronologically() {
+        tasks.sort(Comparator.comparing(
+                (Task task) -> task.getChronologicalDate().orElse(null),
+                Comparator.nullsLast(Comparator.naturalOrder())));
+    }
+
+    /**
      * Returns the zero-based indexes of tasks whose description contains the keyword.
      *
      * @param keyword Keyword to search for (case-insensitive). Must not be empty.
@@ -119,13 +133,10 @@ public class TaskList implements Iterable<Task> {
      */
     public ArrayList<Integer> findMatchingIndexes(String keyword) {
         assert keyword != null && !keyword.isBlank() : "Find keyword should not be null or blank";
-        ArrayList<Integer> matchingIndexes = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword)) {
-                matchingIndexes.add(i);
-            }
-        }
-        return matchingIndexes;
+        return IntStream.range(0, tasks.size())
+                .filter(i -> tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword))
+                .boxed()
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

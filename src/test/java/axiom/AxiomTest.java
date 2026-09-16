@@ -57,4 +57,23 @@ class AxiomTest {
         assertTrue(response.contains("Bye. Hope to see you again soon!"));
         assertTrue(axiom.isExit());
     }
+
+    @Test
+    void getResponse_sortCommand_ordersTasksChronologically() {
+        axiom.getResponse("todo read book");
+        axiom.getResponse("deadline return book /by 2019-10-15");
+        axiom.getResponse("event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600");
+        axiom.getResponse("deadline homework /by 2019-06-06");
+
+        String response = axiom.getResponse("sort");
+        assertTrue(response.contains("sorted your tasks chronologically"));
+        assertTrue(response.indexOf("homework") < response.indexOf("project meeting"));
+        assertTrue(response.indexOf("project meeting") < response.indexOf("return book"));
+        assertTrue(response.indexOf("return book") < response.indexOf("read book"));
+
+        String list = axiom.getResponse("list");
+        assertTrue(list.indexOf("homework") < list.indexOf("project meeting"));
+        assertTrue(list.indexOf("project meeting") < list.indexOf("return book"));
+        assertTrue(list.indexOf("return book") < list.indexOf("read book"));
+    }
 }

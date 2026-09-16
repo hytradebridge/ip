@@ -1,6 +1,7 @@
 package axiom.task;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import axiom.parser.DateTimeParser;
 
@@ -32,6 +33,14 @@ public class Deadline extends Task {
      */
     public LocalDateTime getBy() {
         return by;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<LocalDateTime> getChronologicalDate() {
+        return Optional.of(by);
     }
 
     /**

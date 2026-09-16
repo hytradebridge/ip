@@ -1,11 +1,14 @@
 package axiom.command;
 
+import java.util.Arrays;
+
 /**
  * Represents the commands supported by the AXIOM chatbot.
  */
 public enum Command {
     BYE("bye"),
     LIST("list"),
+    SORT("sort"),
     FIND("find"),
     MARK("mark"),
     UNMARK("unmark"),
@@ -59,14 +62,10 @@ public enum Command {
      * @return The matching command, or {@link #UNKNOWN} if no command matches.
      */
     public static Command fromInput(String input) {
-        for (Command command : values()) {
-            if (command == UNKNOWN) {
-                continue;
-            }
-            if (command.matches(input)) {
-                return command;
-            }
-        }
-        return UNKNOWN;
+        return Arrays.stream(values())
+                .filter(command -> command != UNKNOWN)
+                .filter(command -> command.matches(input))
+                .findFirst()
+                .orElse(UNKNOWN);
     }
 }
