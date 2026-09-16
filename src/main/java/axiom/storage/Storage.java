@@ -233,18 +233,29 @@ public class Storage {
      */
     private String formatTask(Task task) {
         String status = task.isDone() ? STATUS_DONE : STATUS_NOT_DONE;
-        if (task instanceof Todo) {
-            return TYPE_TODO + FIELD_DELIMITER + status + FIELD_DELIMITER + task.getDescription();
+        String description = task.getDescription();
+        switch (task) {
+        case Todo _:
+            return joinFields(TYPE_TODO, status, description);
+        case Deadline deadline:
+            return joinFields(TYPE_DEADLINE, status, description,
+                    DateTimeParser.formatStored(deadline.getBy()));
+        case Event event:
+            return joinFields(TYPE_EVENT, status, description,
+                    DateTimeParser.formatStored(event.getFrom()) + EVENT_TIME_DELIMITER
+                            + DateTimeParser.formatStored(event.getTo()));
+        default:
+            throw new IllegalArgumentException("Unknown task type: " + task.getClass().getName());
         }
-        if (task instanceof Deadline deadline) {
-            return TYPE_DEADLINE + FIELD_DELIMITER + status + FIELD_DELIMITER + task.getDescription()
-                    + FIELD_DELIMITER + DateTimeParser.formatStored(deadline.getBy());
-        }
-        if (task instanceof Event event) {
-            return TYPE_EVENT + FIELD_DELIMITER + status + FIELD_DELIMITER + task.getDescription()
-                    + FIELD_DELIMITER + DateTimeParser.formatStored(event.getFrom())
-                    + EVENT_TIME_DELIMITER + DateTimeParser.formatStored(event.getTo());
-        }
-        throw new IllegalArgumentException("Unknown task type: " + task.getClass().getName());
+    }
+
+    /**
+     * Returns a pipe-delimited line from the given fields.
+     *
+     * @param fields Values to join in file order.
+     * @return A single storage line.
+     */
+    private String joinFields(String... fields) {
+        return String.join(FIELD_DELIMITER, fields);
     }
 }
