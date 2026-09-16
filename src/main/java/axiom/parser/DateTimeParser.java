@@ -71,10 +71,11 @@ public class DateTimeParser {
      * @throws AxiomException If the stored value is not valid ISO-8601.
      */
     public static LocalDateTime parseStored(String input) throws AxiomException {
+        String trimmed = input.trim();
         try {
-            return LocalDateTime.parse(input.trim());
+            return LocalDateTime.parse(trimmed);
         } catch (DateTimeParseException e) {
-            throw new AxiomException("Invalid stored date/time: '" + input.trim() + "'.");
+            throw new AxiomException("Invalid stored date/time: '" + trimmed + "'.");
         }
     }
 
