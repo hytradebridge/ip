@@ -103,13 +103,13 @@ public class Ui {
      * Returns tasks whose descriptions match the search keyword.
      *
      * @param tasks Task list to search.
-     * @param matchingNumbers One-based indices of matching tasks.
+     * @param matchingIndexes Zero-based indexes of matching tasks.
      * @return Formatted matching-task text.
      */
-    public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
+    public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingIndexes) {
         StringBuilder builder = new StringBuilder(" Here are the matching tasks in your list:");
-        for (int number : matchingNumbers) {
-            appendNumberedTask(builder, number, tasks.get(number - 1));
+        for (int index : matchingIndexes) {
+            appendNumberedTask(builder, index + 1, tasks.get(index));
         }
         return builder.toString();
     }

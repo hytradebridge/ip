@@ -150,7 +150,7 @@ public class Axiom {
      */
     private String findTasks(String input) throws AxiomException {
         String keyword = parser.parseFindKeyword(input);
-        return ui.formatMatchingTasks(tasks, tasks.findMatchingTaskNumbers(keyword));
+        return ui.formatMatchingTasks(tasks, tasks.findMatchingIndexes(keyword));
     }
 
     /**

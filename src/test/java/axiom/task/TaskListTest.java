@@ -92,27 +92,27 @@ class TaskListTest {
     }
 
     @Test
-    void findMatchingTaskNumbers_matchingKeyword_returnsOriginalTaskNumbers() {
+    void findMatchingIndexes_matchingKeyword_returnsZeroBasedIndexes() {
         taskList.add(firstTask);
         taskList.add(new Todo("buy bread"));
         taskList.add(secondTask);
-        ArrayList<Integer> matches = taskList.findMatchingTaskNumbers("book");
+        ArrayList<Integer> matches = taskList.findMatchingIndexes("book");
         assertEquals(2, matches.size());
-        assertEquals(1, matches.get(0));
-        assertEquals(3, matches.get(1));
+        assertEquals(0, matches.get(0));
+        assertEquals(2, matches.get(1));
     }
 
     @Test
-    void findMatchingTaskNumbers_caseInsensitive_returnsMatches() {
+    void findMatchingIndexes_caseInsensitive_returnsMatches() {
         taskList.add(new Todo("Read Book"));
-        ArrayList<Integer> matches = taskList.findMatchingTaskNumbers("book");
+        ArrayList<Integer> matches = taskList.findMatchingIndexes("book");
         assertEquals(1, matches.size());
-        assertEquals(1, matches.get(0));
+        assertEquals(0, matches.get(0));
     }
 
     @Test
-    void findMatchingTaskNumbers_noMatch_returnsEmptyList() {
+    void findMatchingIndexes_noMatch_returnsEmptyList() {
         taskList.add(firstTask);
-        assertTrue(taskList.findMatchingTaskNumbers("xyz").isEmpty());
+        assertTrue(taskList.findMatchingIndexes("xyz").isEmpty());
     }
 }

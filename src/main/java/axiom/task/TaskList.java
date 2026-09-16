@@ -82,20 +82,20 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
-     * Returns the one-based indices of tasks whose description contains the keyword.
+     * Returns the zero-based indexes of tasks whose description contains the keyword.
      *
      * @param keyword Keyword to search for (case-insensitive).
-     * @return One-based task numbers of matching tasks, in list order.
+     * @return Zero-based indexes of matching tasks, in list order.
      */
-    public ArrayList<Integer> findMatchingTaskNumbers(String keyword) {
-        ArrayList<Integer> matchingNumbers = new ArrayList<>();
+    public ArrayList<Integer> findMatchingIndexes(String keyword) {
+        ArrayList<Integer> matchingIndexes = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword)) {
-                matchingNumbers.add(i + 1);
+                matchingIndexes.add(i);
             }
         }
-        return matchingNumbers;
+        return matchingIndexes;
     }
 
     /**
