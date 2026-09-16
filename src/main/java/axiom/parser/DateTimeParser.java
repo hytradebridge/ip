@@ -85,10 +85,20 @@ public class DateTimeParser {
      * @return A human-readable date or date-time string.
      */
     public static String format(LocalDateTime dateTime) {
-        if (dateTime.getHour() == 0 && dateTime.getMinute() == 0) {
+        if (isAtStartOfDay(dateTime)) {
             return dateTime.format(DISPLAY_DATE);
         }
         return dateTime.format(DISPLAY_DATETIME);
+    }
+
+    /**
+     * Returns whether {@code dateTime} has no time-of-day component.
+     *
+     * @param dateTime Date and time to inspect.
+     * @return {@code true} if the time is midnight.
+     */
+    private static boolean isAtStartOfDay(LocalDateTime dateTime) {
+        return dateTime.getHour() == 0 && dateTime.getMinute() == 0;
     }
 
     /**
