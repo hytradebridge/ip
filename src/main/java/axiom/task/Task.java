@@ -7,7 +7,7 @@ public class Task {
     private static final String DONE_ICON = "X";
     private static final String NOT_DONE_ICON = " ";
 
-    private String description;
+    private final String description;
     private boolean isDone;
 
     /**
