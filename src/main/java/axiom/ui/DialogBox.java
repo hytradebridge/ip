@@ -21,6 +21,9 @@ import javafx.scene.text.Font;
  * and a label containing text from the speaker.
  */
 public class DialogBox extends HBox {
+    private static final double MAX_DIALOG_WIDTH = 320.0;
+    private static final String AXIOM_FONT_FAMILY = "Monospaced";
+    private static final double AXIOM_FONT_SIZE = 12;
     @FXML
     private Label dialog;
     @FXML
@@ -37,7 +40,7 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
-        dialog.setMaxWidth(320.0);
+        dialog.setMaxWidth(MAX_DIALOG_WIDTH);
         HBox.setHgrow(dialog, Priority.ALWAYS);
         displayPicture.setImage(img);
     }
@@ -74,7 +77,7 @@ public class DialogBox extends HBox {
         DialogBox dialogBox = new DialogBox(text, img);
         dialogBox.flip();
         // Monospaced font keeps the ASCII banner and separator lines aligned.
-        dialogBox.dialog.setFont(Font.font("Monospaced", 12));
+        dialogBox.dialog.setFont(Font.font(AXIOM_FONT_FAMILY, AXIOM_FONT_SIZE));
         return dialogBox;
     }
 }

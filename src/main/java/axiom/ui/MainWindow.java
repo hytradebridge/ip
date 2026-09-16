@@ -17,6 +17,7 @@ import axiom.Axiom;
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
+    private static final double EXIT_DELAY_SECONDS = 1.5;
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -73,7 +74,7 @@ public class MainWindow extends AnchorPane {
         if (axiom.isExit()) {
             userInput.setDisable(true);
             sendButton.setDisable(true);
-            PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
+            PauseTransition delay = new PauseTransition(Duration.seconds(EXIT_DELAY_SECONDS));
             delay.setOnFinished(event -> Platform.exit());
             delay.play();
         }
