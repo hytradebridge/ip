@@ -164,28 +164,54 @@ public class Storage {
         case TYPE_TODO:
             return new Todo(description);
         case TYPE_DEADLINE:
-            if (parts.length <= DETAILS_INDEX || parts[DETAILS_INDEX].trim().isEmpty()) {
-                throw formatError(lineNumber, "deadline is missing a /by value.");
-            }
-            return new Deadline(description, DateTimeParser.parseStored(parts[DETAILS_INDEX].trim()));
+            return createDeadline(description, parts, lineNumber);
         case TYPE_EVENT:
-            if (parts.length <= DETAILS_INDEX) {
-                throw formatError(lineNumber, "event is missing date/time information.");
-            }
-            String fromTo = parts[DETAILS_INDEX].trim();
-            int toIndex = fromTo.indexOf(EVENT_TIME_DELIMITER);
-            if (toIndex == -1) {
-                throw formatError(lineNumber, "event must contain ' to ' between start and end times.");
-            }
-            String from = fromTo.substring(0, toIndex).trim();
-            String to = fromTo.substring(toIndex + EVENT_TIME_DELIMITER.length()).trim();
-            if (from.isEmpty() || to.isEmpty()) {
-                throw formatError(lineNumber, "event start and end times cannot be empty.");
-            }
-            return new Event(description, DateTimeParser.parseStored(from), DateTimeParser.parseStored(to));
+            return createEvent(description, parts, lineNumber);
         default:
             throw formatError(lineNumber, "unknown task type '" + type + "'.");
         }
+    }
+
+    /**
+     * Returns a deadline from parsed file fields.
+     *
+     * @param description Task description.
+     * @param parts All pipe-separated fields from the file line.
+     * @param lineNumber One-based line number, used in error messages.
+     * @return The created deadline (not yet marked done).
+     * @throws AxiomException If the {@code /by} value is missing.
+     */
+    private Task createDeadline(String description, String[] parts, int lineNumber) throws AxiomException {
+        if (parts.length <= DETAILS_INDEX || parts[DETAILS_INDEX].trim().isEmpty()) {
+            throw formatError(lineNumber, "deadline is missing a /by value.");
+        }
+        return new Deadline(description, DateTimeParser.parseStored(parts[DETAILS_INDEX].trim()));
+    }
+
+    /**
+     * Returns an event from parsed file fields.
+     *
+     * @param description Task description.
+     * @param parts All pipe-separated fields from the file line.
+     * @param lineNumber One-based line number, used in error messages.
+     * @return The created event (not yet marked done).
+     * @throws AxiomException If start or end times are missing.
+     */
+    private Task createEvent(String description, String[] parts, int lineNumber) throws AxiomException {
+        if (parts.length <= DETAILS_INDEX) {
+            throw formatError(lineNumber, "event is missing date/time information.");
+        }
+        String fromTo = parts[DETAILS_INDEX].trim();
+        int timeSeparatorIndex = fromTo.indexOf(EVENT_TIME_DELIMITER);
+        if (timeSeparatorIndex == -1) {
+            throw formatError(lineNumber, "event must contain ' to ' between start and end times.");
+        }
+        String from = fromTo.substring(0, timeSeparatorIndex).trim();
+        String to = fromTo.substring(timeSeparatorIndex + EVENT_TIME_DELIMITER.length()).trim();
+        if (from.isEmpty() || to.isEmpty()) {
+            throw formatError(lineNumber, "event start and end times cannot be empty.");
+        }
+        return new Event(description, DateTimeParser.parseStored(from), DateTimeParser.parseStored(to));
     }
 
     /**
