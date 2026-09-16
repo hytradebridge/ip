@@ -1,6 +1,8 @@
 package axiom.task;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Contains the list of tasks and supports operations to modify it.
@@ -87,14 +89,12 @@ public class TaskList {
      * @return One-based task numbers of matching tasks, in list order.
      */
     public ArrayList<Integer> findMatchingTaskNumbers(String keyword) {
-        ArrayList<Integer> matchingNumbers = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword)) {
-                matchingNumbers.add(i + 1);
-            }
-        }
-        return matchingNumbers;
+        return IntStream.range(0, tasks.size())
+                .filter(i -> tasks.get(i).getDescription().toLowerCase().contains(lowerKeyword))
+                .map(i -> i + 1)
+                .boxed()
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**

@@ -2,6 +2,9 @@ package axiom.ui;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import axiom.task.Task;
 import axiom.task.TaskList;
@@ -93,11 +96,11 @@ public class Ui {
      * @return Formatted task list text.
      */
     public String formatTaskList(TaskList tasks) {
-        StringBuilder builder = new StringBuilder(" Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            builder.append('\n').append(" ").append(i + 1).append('.').append(tasks.get(i));
-        }
-        return builder.toString();
+        return Stream.concat(
+                Stream.of(" Here are the tasks in your list:"),
+                IntStream.range(0, tasks.size())
+                        .mapToObj(i -> " " + (i + 1) + "." + tasks.get(i)))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
@@ -117,11 +120,11 @@ public class Ui {
      * @return Formatted matching-task text.
      */
     public String formatMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
-        StringBuilder builder = new StringBuilder(" Here are the matching tasks in your list:");
-        for (int number : matchingNumbers) {
-            builder.append('\n').append(" ").append(number).append('.').append(tasks.get(number - 1));
-        }
-        return builder.toString();
+        return Stream.concat(
+                Stream.of(" Here are the matching tasks in your list:"),
+                matchingNumbers.stream()
+                        .map(number -> " " + number + "." + tasks.get(number - 1)))
+                .collect(Collectors.joining("\n"));
     }
 
     /**

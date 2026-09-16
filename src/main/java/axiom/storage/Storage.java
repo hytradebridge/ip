@@ -75,10 +75,9 @@ public class Storage {
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            ArrayList<String> lines = new ArrayList<>();
-            for (Task task : tasks.getTasks()) {
-                lines.add(formatTask(task));
-            }
+            List<String> lines = tasks.getTasks().stream()
+                    .map(this::formatTask)
+                    .toList();
             Files.write(filePath, lines);
         } catch (IOException e) {
             throw new AxiomException("Could not save tasks to " + filePath + ".");
