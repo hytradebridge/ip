@@ -1,6 +1,8 @@
 package axiom.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +39,20 @@ class CommandTest {
     void fromInput_partialKeywordMatch_returnsUnknown() {
         assertEquals(Command.UNKNOWN, Command.fromInput("byee"));
         assertEquals(Command.UNKNOWN, Command.fromInput("listing"));
+    }
+
+    @Test
+    void matches_exactKeywordOrWithArgument_returnsTrue() {
+        assertTrue(Command.TODO.matches("todo"));
+        assertTrue(Command.TODO.matches("todo read book"));
+        assertTrue(Command.MARK.matches("mark 1"));
+    }
+
+    @Test
+    void matches_unrelatedInput_returnsFalse() {
+        assertFalse(Command.TODO.matches("deadline homework"));
+        assertFalse(Command.TODO.matches("tod"));
+        assertFalse(Command.BYE.matches("byee"));
     }
 
     @Test
