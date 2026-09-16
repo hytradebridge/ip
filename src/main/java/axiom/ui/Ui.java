@@ -80,13 +80,6 @@ public class Ui {
     }
 
     /**
-     * Displays the goodbye message.
-     */
-    public void showGoodbye() {
-        System.out.println(formatGoodbye());
-    }
-
-    /**
      * Returns all tasks in the list with their one-based indices.
      *
      * @param tasks Task list to display.
@@ -98,15 +91,6 @@ public class Ui {
             builder.append('\n').append(" ").append(i + 1).append('.').append(tasks.get(i));
         }
         return builder.toString();
-    }
-
-    /**
-     * Displays all tasks in the list with their one-based indices.
-     *
-     * @param tasks Task list to display.
-     */
-    public void showTaskList(TaskList tasks) {
-        System.out.println(formatTaskList(tasks));
     }
 
     /**
@@ -125,16 +109,6 @@ public class Ui {
     }
 
     /**
-     * Displays tasks whose descriptions match the search keyword.
-     *
-     * @param tasks Task list to search.
-     * @param matchingNumbers One-based indices of matching tasks.
-     */
-    public void showMatchingTasks(TaskList tasks, ArrayList<Integer> matchingNumbers) {
-        System.out.println(formatMatchingTasks(tasks, matchingNumbers));
-    }
-
-    /**
      * Returns confirmation that a task was added.
      *
      * @param task The task that was added.
@@ -144,16 +118,6 @@ public class Ui {
     public String formatTaskAdded(Task task, int taskCount) {
         return " Got it. I've added this task:\n   " + task
                 + "\n Now you have " + taskCount + " tasks in the list.";
-    }
-
-    /**
-     * Displays confirmation that a task was added.
-     *
-     * @param task The task that was added.
-     * @param taskCount Total number of tasks after the addition.
-     */
-    public void showTaskAdded(Task task, int taskCount) {
-        System.out.println(formatTaskAdded(task, taskCount));
     }
 
     /**
@@ -167,15 +131,6 @@ public class Ui {
     }
 
     /**
-     * Displays confirmation that a task was marked as done.
-     *
-     * @param task The task that was marked.
-     */
-    public void showMarked(Task task) {
-        System.out.println(formatMarked(task));
-    }
-
-    /**
      * Returns confirmation that a task was marked as not done.
      *
      * @param task The task that was unmarked.
@@ -183,15 +138,6 @@ public class Ui {
      */
     public String formatUnmarked(Task task) {
         return " OK, I've marked this task as not done yet:\n   " + task;
-    }
-
-    /**
-     * Displays confirmation that a task was marked as not done.
-     *
-     * @param task The task that was unmarked.
-     */
-    public void showUnmarked(Task task) {
-        System.out.println(formatUnmarked(task));
     }
 
     /**
@@ -204,15 +150,5 @@ public class Ui {
     public String formatDeleted(Task task, int taskCount) {
         return " Noted. I've removed this task:\n   " + task
                 + "\n Now you have " + taskCount + " tasks in the list.";
-    }
-
-    /**
-     * Displays confirmation that a task was deleted.
-     *
-     * @param task The task that was removed.
-     * @param taskCount Total number of tasks after the deletion.
-     */
-    public void showDeleted(Task task, int taskCount) {
-        System.out.println(formatDeleted(task, taskCount));
     }
 }
