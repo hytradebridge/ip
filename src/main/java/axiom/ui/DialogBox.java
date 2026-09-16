@@ -46,9 +46,9 @@ public class DialogBox extends HBox {
      * Flips the dialog box such that the ImageView is on the left and text on the right.
      */
     private void flip() {
-        ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
-        Collections.reverse(tmp);
-        getChildren().setAll(tmp);
+        ObservableList<Node> children = FXCollections.observableArrayList(this.getChildren());
+        Collections.reverse(children);
+        getChildren().setAll(children);
         setAlignment(Pos.TOP_LEFT);
     }
 
@@ -71,10 +71,10 @@ public class DialogBox extends HBox {
      * @return Dialog box aligned to the left.
      */
     public static DialogBox getAxiomDialog(String text, Image img) {
-        DialogBox db = new DialogBox(text, img);
-        db.flip();
+        DialogBox dialogBox = new DialogBox(text, img);
+        dialogBox.flip();
         // Monospaced font keeps the ASCII banner and separator lines aligned.
-        db.dialog.setFont(Font.font("Monospaced", 12));
-        return db;
+        dialogBox.dialog.setFont(Font.font("Monospaced", 12));
+        return dialogBox;
     }
 }
