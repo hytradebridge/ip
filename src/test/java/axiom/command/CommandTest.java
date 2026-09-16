@@ -30,10 +30,23 @@ class CommandTest {
     }
 
     @Test
+    void fromInput_leadingAndTrailingSpaces_returnsCommand() {
+        assertEquals(Command.LIST, Command.fromInput("  list  "));
+        assertEquals(Command.TODO, Command.fromInput("\ttodo read book"));
+    }
+
+    @Test
     void fromInput_unknownInput_returnsUnknown() {
         assertEquals(Command.UNKNOWN, Command.fromInput("blah"));
         assertEquals(Command.UNKNOWN, Command.fromInput(""));
         assertEquals(Command.UNKNOWN, Command.fromInput("tod"));
+    }
+
+    @Test
+    void tokens_repeatedWhitespace_collapsesToSingleSeparators() {
+        assertEquals(3, Command.tokens("  todo   read   book ").length);
+        assertEquals("todo", Command.tokens("  todo   read   book ")[0]);
+        assertEquals("book", Command.tokens("  todo   read   book ")[2]);
     }
 
     @Test

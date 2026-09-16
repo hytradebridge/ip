@@ -27,6 +27,18 @@ public class Deadline extends Task {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasSameDetails(Task other) {
+        if (!super.hasSameDetails(other)) {
+            return false;
+        }
+        Deadline deadline = (Deadline) other;
+        return by.equals(deadline.by);
+    }
+
+    /**
      * Returns the deadline date and time.
      *
      * @return The {@code /by} date and time.

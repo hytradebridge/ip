@@ -98,4 +98,48 @@ class AxiomTest {
         assertTrue(list.indexOf("project meeting") < list.indexOf("return book"));
         assertTrue(list.indexOf("return book") < list.indexOf("read book"));
     }
+
+    @Test
+    void getReply_blankInput_isError() {
+        AxiomReply reply = axiom.getReply("   ");
+        assertTrue(reply.isError());
+        assertTrue(reply.getMessage().contains("Please enter a command."));
+    }
+
+    @Test
+    void getReply_listWithExtraArgument_isError() {
+        AxiomReply reply = axiom.getReply("list extra");
+        assertTrue(reply.isError());
+        assertTrue(reply.getMessage().contains("does not take any arguments"));
+    }
+
+    @Test
+    void getReply_duplicateTodo_isError() {
+        axiom.getReply("todo read book");
+        AxiomReply reply = axiom.getReply("todo read book");
+        assertTrue(reply.isError());
+        assertTrue(reply.getMessage().contains("already in your list"));
+    }
+
+    @Test
+    void getReply_leadingSpaces_parsesCommand() {
+        AxiomReply reply = axiom.getReply("  todo   read book  ");
+        assertFalse(reply.isError());
+        assertTrue(reply.getMessage().contains("read book"));
+    }
+
+    @Test
+    void getReply_invalidCalendarDate_isError() {
+        AxiomReply reply = axiom.getReply("deadline homework /by 2019-02-30");
+        assertTrue(reply.isError());
+        assertTrue(reply.getMessage().contains("not a valid date or time"));
+    }
+
+    @Test
+    void getReply_eventFromAfterTo_isError() {
+        AxiomReply reply = axiom.getReply(
+                "event meeting /from 2019-08-06 1600 /to 2019-08-06 1400");
+        assertTrue(reply.isError());
+        assertTrue(reply.getMessage().contains("must be earlier than the /to time"));
+    }
 }

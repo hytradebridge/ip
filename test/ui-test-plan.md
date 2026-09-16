@@ -1011,3 +1011,76 @@ T | 0 | read book
 
 ```
 
+---
+
+## Test Case 24: Reject invalid commands and data
+
+**Aim:** Verify leading/extra spaces are accepted, while blank input, duplicates, impossible dates, repeated flags, reversed event times, extra arguments, and pipe characters are rejected with clear errors.
+
+**Inputs:**
+```
+
+  todo   read book
+todo read book
+deadline homework /by 2019-02-30
+deadline homework /by 2019-06-06 /by 2019-07-01
+event meeting /from 2019-08-06 1600 /to 2019-08-06 1400
+list extra
+todo read | book
+list
+bye
+```
+
+**Expected output:**
+```
+     _    __  _____ ___  __  __ 
+    / \   \ \/ /_ _/ _ \|  \/  |
+   / _ \   \  / | | | | | |\/| |
+  / ___ \  /  \ | | |_| | |  | |
+ /_/   \_\/_/\_\___\___/|_|  |_|
+
+Hello! I'm AXIOM.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Please enter a command.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ That task is already in your list.
+____________________________________________________________
+____________________________________________________________
+ '2019-02-30' is not a valid date or time.
+____________________________________________________________
+____________________________________________________________
+ The /by time is specified more than once. Usage: deadline <description> /by <time>
+____________________________________________________________
+____________________________________________________________
+ The event /from time must be earlier than the /to time.
+____________________________________________________________
+____________________________________________________________
+ list does not take any arguments. Usage: list
+____________________________________________________________
+____________________________________________________________
+ Task descriptions cannot contain '|'.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] read book
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+
+```
+
+**Expected file:** `data/axiom.txt`
+```
+T | 0 | read book
+
+```
+

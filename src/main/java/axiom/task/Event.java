@@ -26,8 +26,21 @@ public class Event extends Task {
         // DateTimeParser always returns parsed values; null times mean a caller bug.
         assert from != null : "Event /from date-time should not be null";
         assert to != null : "Event /to date-time should not be null";
+        assert from.isBefore(to) : "Event /from must be earlier than /to";
         this.from = from;
         this.to = to;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasSameDetails(Task other) {
+        if (!super.hasSameDetails(other)) {
+            return false;
+        }
+        Event event = (Event) other;
+        return from.equals(event.from) && to.equals(event.to);
     }
 
     /**

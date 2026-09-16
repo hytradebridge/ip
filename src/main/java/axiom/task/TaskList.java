@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import axiom.AxiomException;
+
 /**
  * Contains the list of tasks and supports operations to modify it.
  */
@@ -34,10 +36,14 @@ public class TaskList implements Iterable<Task> {
      * Adds a task to the end of the list.
      *
      * @param task Task to add. Must not be {@code null}.
+     * @throws AxiomException If a task with the same details is already in the list.
      */
-    public void add(Task task) {
+    public void add(Task task) throws AxiomException {
         // Parser constructs a concrete Task before Axiom calls add.
         assert task != null : "Cannot add a null task";
+        if (containsSameDetails(task)) {
+            throw new AxiomException("That task is already in your list.");
+        }
         tasks.add(task);
     }
 
@@ -112,6 +118,16 @@ public class TaskList implements Iterable<Task> {
      */
     private boolean isValidIndex(int index) {
         return index >= 0 && index < tasks.size();
+    }
+
+    /**
+     * Returns whether the list already contains a task with the same details as {@code task}.
+     *
+     * @param task Task to look for.
+     * @return {@code true} if a matching task is present.
+     */
+    public boolean containsSameDetails(Task task) {
+        return tasks.stream().anyMatch(existing -> existing.hasSameDetails(task));
     }
 
     /**

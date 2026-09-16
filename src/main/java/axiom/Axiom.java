@@ -133,17 +133,23 @@ public class Axiom {
      *
      * @param input Raw command line from the user.
      * @return Reply text for the command.
-     * @throws AxiomException If the command is invalid or cannot be executed.
+     * @throws AxiomException If the command is invalid, the data is invalid, or the list cannot be saved.
      */
     private String execute(String input) throws AxiomException {
         assert input != null : "Command input should not be null";
+        if (input.trim().isEmpty()) {
+            throw new AxiomException("Please enter a command.");
+        }
         switch (parser.getCommand(input)) {
         case BYE:
+            parser.requireNoArguments(Command.BYE, input);
             isExit = true;
             return ui.formatGoodbye();
         case LIST:
+            parser.requireNoArguments(Command.LIST, input);
             return ui.formatTaskList(tasks);
         case SORT:
+            parser.requireNoArguments(Command.SORT, input);
             return sortTasks();
         case FIND:
             return findTasks(input);
@@ -238,7 +244,7 @@ public class Axiom {
      *
      * @param task Task to add.
      * @return Formatted add-task confirmation.
-     * @throws AxiomException If the task list cannot be saved.
+     * @throws AxiomException If the task is a duplicate or the list cannot be saved.
      */
     private String addTask(Task task) throws AxiomException {
         tasks.add(task);

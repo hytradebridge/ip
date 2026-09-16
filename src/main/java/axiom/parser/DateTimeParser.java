@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import axiom.AxiomException;
 
@@ -19,16 +20,19 @@ public class DateTimeParser {
             DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a", Locale.ENGLISH);
 
     private static final DateTimeFormatter[] DATE_TIME_FORMATTERS = {
-        DateTimeFormatter.ofPattern("d/M/yyyy HHmm").withResolverStyle(ResolverStyle.SMART),
-        DateTimeFormatter.ofPattern("d/M/yyyy H:mm").withResolverStyle(ResolverStyle.SMART),
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm").withResolverStyle(ResolverStyle.SMART),
-        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm").withResolverStyle(ResolverStyle.SMART),
+        DateTimeFormatter.ofPattern("d/M/uuuu HHmm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("d/M/uuuu H:mm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm").withResolverStyle(ResolverStyle.STRICT),
     };
 
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
-        DateTimeFormatter.ofPattern("d/M/yyyy").withResolverStyle(ResolverStyle.SMART),
+        DateTimeFormatter.ofPattern("d/M/uuuu").withResolverStyle(ResolverStyle.STRICT),
         DateTimeFormatter.ISO_LOCAL_DATE,
     };
+
+    private static final Pattern DATE_LIKE_PATTERN =
+            Pattern.compile("\\d{1,4}[-/]\\d{1,2}[-/]\\d{1,4}(?:[ T]\\d{1,4}(?::\\d{2})?)?");
 
     private DateTimeParser() {
     }
@@ -38,10 +42,13 @@ public class DateTimeParser {
      *
      * @param input Date/time text supplied by the user.
      * @return The parsed date and time.
-     * @throws AxiomException If the input does not match any supported format.
+     * @throws AxiomException If the input is missing, not a real calendar date, or uses an unsupported format.
      */
     public static LocalDateTime parse(String input) throws AxiomException {
         String trimmed = input.trim();
+        if (trimmed.isEmpty()) {
+            throw new AxiomException("A date/time value is missing. Use yyyy-MM-dd or d/M/yyyy HHmm.");
+        }
 
         LocalDateTime dateTime = tryParseDateTime(trimmed);
         if (dateTime != null) {
@@ -53,6 +60,10 @@ public class DateTimeParser {
             return dateOnly;
         }
 
+        if (DATE_LIKE_PATTERN.matcher(trimmed).matches()) {
+            throw new AxiomException("'" + trimmed + "' is not a valid date or time.");
+        }
+
         throw new AxiomException("Invalid date/time format: '" + trimmed
                 + "'. Use yyyy-MM-dd or d/M/yyyy HHmm.");
     }
@@ -62,7 +73,7 @@ public class DateTimeParser {
      *
      * @param input ISO-8601 date/time text from the data file.
      * @return The parsed date and time.
-     * @throws AxiomException If the stored value is not valid ISO-8601.
+     * @throws AxiomException If the stored value is not a valid ISO-8601 date/time.
      */
     public static LocalDateTime parseStored(String input) throws AxiomException {
         String trimmed = input.trim();

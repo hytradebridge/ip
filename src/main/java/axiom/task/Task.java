@@ -27,6 +27,16 @@ public class Task {
     }
 
     /**
+     * Returns the date used when ordering this task chronologically.
+     * Tasks without a date return an empty result.
+     *
+     * @return The chronological date, or empty if this task has none.
+     */
+    public Optional<LocalDateTime> getChronologicalDate() {
+        return Optional.empty();
+    }
+
+    /**
      * Returns the task description.
      *
      * @return The description text.
@@ -68,13 +78,17 @@ public class Task {
     }
 
     /**
-     * Returns the date used when ordering this task chronologically.
-     * Tasks without a date return an empty result.
+     * Returns whether this task has the same type and identifying details as {@code other}.
+     * Done status is ignored so a marked copy still counts as the same task.
      *
-     * @return The chronological date, or empty if this task has none.
+     * @param other Task to compare.
+     * @return {@code true} if both tasks represent the same work item.
      */
-    public Optional<LocalDateTime> getChronologicalDate() {
-        return Optional.empty();
+    public boolean hasSameDetails(Task other) {
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        return description.equals(other.description);
     }
 
     /**

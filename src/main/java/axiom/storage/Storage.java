@@ -1,8 +1,10 @@
 package axiom.storage;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -28,6 +30,9 @@ public class Storage {
     private static final String STATUS_DONE = "1";
     private static final String STATUS_NOT_DONE = "0";
     private static final int MIN_FIELD_COUNT = 3;
+    private static final int TODO_FIELD_COUNT = 3;
+    private static final int DEADLINE_FIELD_COUNT = 4;
+    private static final int EVENT_FIELD_COUNT = 4;
     private static final int TYPE_INDEX = 0;
     private static final int STATUS_INDEX = 1;
     private static final int DESCRIPTION_INDEX = 2;
@@ -59,7 +64,7 @@ public class Storage {
             throw new AxiomException("Cannot load tasks because " + filePath + " is a directory.");
         }
         if (!Files.isReadable(filePath)) {
-            throw new AxiomException("Cannot read tasks from " + filePath + ".");
+            throw new AxiomException("Access denied when reading tasks from " + filePath + ".");
         }
 
         try {
@@ -70,9 +75,16 @@ public class Storage {
                 if (line.trim().isEmpty()) {
                     continue;
                 }
-                tasks.add(parseTask(line, i + 1));
+                Task task = parseTask(line, i + 1);
+                boolean isDuplicate = tasks.stream().anyMatch(existing -> existing.hasSameDetails(task));
+                if (isDuplicate) {
+                    throw formatError(i + 1, "duplicate of an earlier task.");
+                }
+                tasks.add(task);
             }
             return tasks;
+        } catch (AccessDeniedException e) {
+            throw new AxiomException("Access denied when reading tasks from " + filePath + ".");
         } catch (IOException e) {
             throw new AxiomException("Could not read tasks from " + filePath + ".");
         }
@@ -96,6 +108,8 @@ public class Storage {
                     .map(this::formatTask)
                     .toList();
             Files.write(filePath, lines);
+        } catch (AccessDeniedException e) {
+            throw new AxiomException("Access denied when saving tasks to " + filePath + ".");
         } catch (IOException e) {
             throw new AxiomException("Could not save tasks to " + filePath + ".");
         }
@@ -113,6 +127,13 @@ public class Storage {
         }
         if (Files.exists(filePath) && Files.isDirectory(filePath)) {
             throw new AxiomException("Cannot save tasks because " + filePath + " is a directory.");
+        }
+        if (Files.exists(filePath) && !Files.isWritable(filePath)) {
+            throw new AxiomException("Access denied when saving tasks to " + filePath + ".");
+        }
+        if (parent != null && Files.exists(parent) && Files.isDirectory(parent)
+                && !Files.exists(filePath) && !Files.isWritable(parent)) {
+            throw new AxiomException("Access denied when saving tasks to " + filePath + ".");
         }
     }
 
@@ -164,10 +185,13 @@ public class Storage {
             throws AxiomException {
         switch (type) {
         case TYPE_TODO:
+            requireFieldCount(parts, TODO_FIELD_COUNT, lineNumber, "a todo should have 3 fields.");
             return new Todo(description);
         case TYPE_DEADLINE:
+            requireFieldCount(parts, DEADLINE_FIELD_COUNT, lineNumber, "a deadline should have 4 fields.");
             return createDeadline(description, parts, lineNumber);
         case TYPE_EVENT:
+            requireFieldCount(parts, EVENT_FIELD_COUNT, lineNumber, "an event should have 4 fields.");
             return createEvent(description, parts, lineNumber);
         default:
             throw formatError(lineNumber, "unknown task type '" + type + "'.");
@@ -187,7 +211,11 @@ public class Storage {
         if (parts.length <= DETAILS_INDEX || parts[DETAILS_INDEX].trim().isEmpty()) {
             throw formatError(lineNumber, "deadline is missing a /by value.");
         }
-        return new Deadline(description, DateTimeParser.parseStored(parts[DETAILS_INDEX].trim()));
+        try {
+            return new Deadline(description, DateTimeParser.parseStored(parts[DETAILS_INDEX].trim()));
+        } catch (AxiomException e) {
+            throw formatError(lineNumber, e.getMessage());
+        }
     }
 
     /**
@@ -213,7 +241,34 @@ public class Storage {
         if (from.isEmpty() || to.isEmpty()) {
             throw formatError(lineNumber, "event start and end times cannot be empty.");
         }
-        return new Event(description, DateTimeParser.parseStored(from), DateTimeParser.parseStored(to));
+        LocalDateTime fromTime;
+        LocalDateTime toTime;
+        try {
+            fromTime = DateTimeParser.parseStored(from);
+            toTime = DateTimeParser.parseStored(to);
+        } catch (AxiomException e) {
+            throw formatError(lineNumber, e.getMessage());
+        }
+        if (!fromTime.isBefore(toTime)) {
+            throw formatError(lineNumber, "event /from time must be earlier than /to time.");
+        }
+        return new Event(description, fromTime, toTime);
+    }
+
+    /**
+     * Checks that a file line has exactly {@code expected} pipe-separated fields.
+     *
+     * @param parts Parsed fields from the line.
+     * @param expected Required field count for this task type.
+     * @param lineNumber One-based line number, used in error messages.
+     * @param details Short description of the expected format.
+     * @throws AxiomException If the field count is wrong.
+     */
+    private void requireFieldCount(String[] parts, int expected, int lineNumber, String details)
+            throws AxiomException {
+        if (parts.length != expected) {
+            throw formatError(lineNumber, details);
+        }
     }
 
     /**

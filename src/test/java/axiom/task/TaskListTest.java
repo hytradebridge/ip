@@ -2,6 +2,7 @@ package axiom.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import axiom.AxiomException;
 
 class TaskListTest {
     private TaskList taskList;
@@ -23,14 +26,14 @@ class TaskListTest {
     }
 
     @Test
-    void add_singleTask_increasesSize() {
+    void add_singleTask_increasesSize() throws AxiomException {
         taskList.add(firstTask);
         assertEquals(1, taskList.size());
         assertEquals(firstTask, taskList.get(0));
     }
 
     @Test
-    void add_multipleTasks_preservesOrder() {
+    void add_multipleTasks_preservesOrder() throws AxiomException {
         taskList.add(firstTask);
         taskList.add(secondTask);
         assertEquals(2, taskList.size());
@@ -39,7 +42,37 @@ class TaskListTest {
     }
 
     @Test
-    void delete_existingTask_returnsRemovedTask() {
+    void add_duplicateTodo_exceptionThrown() throws AxiomException {
+        taskList.add(firstTask);
+        AxiomException exception = assertThrows(AxiomException.class, () -> taskList.add(new Todo("read book")));
+        assertEquals("That task is already in your list.", exception.getMessage());
+        assertEquals(1, taskList.size());
+    }
+
+    @Test
+    void add_sameDescriptionDifferentType_allowed() throws AxiomException {
+        taskList.add(firstTask);
+        taskList.add(new Deadline("read book", LocalDateTime.of(2019, 6, 6, 0, 0)));
+        assertEquals(2, taskList.size());
+    }
+
+    @Test
+    void add_sameDeadlineDifferentDate_allowed() throws AxiomException {
+        taskList.add(new Deadline("homework", LocalDateTime.of(2019, 6, 6, 0, 0)));
+        taskList.add(new Deadline("homework", LocalDateTime.of(2019, 10, 15, 0, 0)));
+        assertEquals(2, taskList.size());
+    }
+
+    @Test
+    void add_doneCopyOfExistingTask_exceptionThrown() throws AxiomException {
+        firstTask.markAsDone();
+        taskList.add(firstTask);
+        AxiomException exception = assertThrows(AxiomException.class, () -> taskList.add(new Todo("read book")));
+        assertEquals("That task is already in your list.", exception.getMessage());
+    }
+
+    @Test
+    void delete_existingTask_returnsRemovedTask() throws AxiomException {
         taskList.add(firstTask);
         taskList.add(secondTask);
         Task removed = taskList.delete(0);
@@ -49,7 +82,7 @@ class TaskListTest {
     }
 
     @Test
-    void iterator_containsAddedTasks() {
+    void iterator_containsAddedTasks() throws AxiomException {
         taskList.add(firstTask);
         ArrayList<Task> iterated = new ArrayList<>();
         for (Task task : taskList) {
@@ -69,14 +102,14 @@ class TaskListTest {
     }
 
     @Test
-    void markAsDone_validIndex_marksTaskDone() {
+    void markAsDone_validIndex_marksTaskDone() throws AxiomException {
         taskList.add(firstTask);
         taskList.markAsDone(0);
         assertTrue(taskList.get(0).isDone());
     }
 
     @Test
-    void markAsNotDone_doneTask_marksTaskNotDone() {
+    void markAsNotDone_doneTask_marksTaskNotDone() throws AxiomException {
         taskList.add(firstTask);
         taskList.markAsDone(0);
         taskList.markAsNotDone(0);
@@ -93,7 +126,7 @@ class TaskListTest {
     }
 
     @Test
-    void findMatchingIndexes_matchingKeyword_returnsZeroBasedIndexes() {
+    void findMatchingIndexes_matchingKeyword_returnsZeroBasedIndexes() throws AxiomException {
         taskList.add(firstTask);
         taskList.add(new Todo("buy bread"));
         taskList.add(secondTask);
@@ -104,7 +137,7 @@ class TaskListTest {
     }
 
     @Test
-    void findMatchingIndexes_caseInsensitive_returnsMatches() {
+    void findMatchingIndexes_caseInsensitive_returnsMatches() throws AxiomException {
         taskList.add(new Todo("Read Book"));
         ArrayList<Integer> matches = taskList.findMatchingIndexes("book");
         assertEquals(1, matches.size());
@@ -112,13 +145,13 @@ class TaskListTest {
     }
 
     @Test
-    void findMatchingIndexes_noMatch_returnsEmptyList() {
+    void findMatchingIndexes_noMatch_returnsEmptyList() throws AxiomException {
         taskList.add(firstTask);
         assertTrue(taskList.findMatchingIndexes("xyz").isEmpty());
     }
 
     @Test
-    void sortChronologically_deadlinesOutOfOrder_ordersByDate() {
+    void sortChronologically_deadlinesOutOfOrder_ordersByDate() throws AxiomException {
         Deadline later = new Deadline("later", LocalDateTime.of(2019, 10, 15, 0, 0));
         Deadline earlier = new Deadline("earlier", LocalDateTime.of(2019, 6, 6, 0, 0));
         taskList.add(later);
@@ -131,7 +164,7 @@ class TaskListTest {
     }
 
     @Test
-    void sortChronologically_mixedTypes_placesTodosAfterDatedTasks() {
+    void sortChronologically_mixedTypes_placesTodosAfterDatedTasks() throws AxiomException {
         Todo todo = new Todo("read book");
         Event event = new Event("meeting",
                 LocalDateTime.of(2019, 8, 6, 14, 0),
@@ -149,7 +182,7 @@ class TaskListTest {
     }
 
     @Test
-    void sortChronologically_sameDate_keepsRelativeOrder() {
+    void sortChronologically_sameDate_keepsRelativeOrder() throws AxiomException {
         Deadline first = new Deadline("first", LocalDateTime.of(2019, 6, 6, 0, 0));
         Deadline second = new Deadline("second", LocalDateTime.of(2019, 6, 6, 0, 0));
         taskList.add(first);
