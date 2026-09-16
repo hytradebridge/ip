@@ -162,9 +162,10 @@ public class Axiom {
      */
     private String markTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.MARK, input, tasks.size());
-        tasks.markAsDone(taskNumber - 1);
+        int index = toZeroBasedIndex(taskNumber);
+        tasks.markAsDone(index);
         storage.save(tasks);
-        return ui.formatMarked(tasks.get(taskNumber - 1));
+        return ui.formatMarked(tasks.get(index));
     }
 
     /**
@@ -176,9 +177,10 @@ public class Axiom {
      */
     private String unmarkTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.UNMARK, input, tasks.size());
-        tasks.markAsNotDone(taskNumber - 1);
+        int index = toZeroBasedIndex(taskNumber);
+        tasks.markAsNotDone(index);
         storage.save(tasks);
-        return ui.formatUnmarked(tasks.get(taskNumber - 1));
+        return ui.formatUnmarked(tasks.get(index));
     }
 
     /**
@@ -190,7 +192,8 @@ public class Axiom {
      */
     private String deleteTask(String input) throws AxiomException {
         int taskNumber = parser.parseTaskNumber(Command.DELETE, input, tasks.size());
-        Task removed = tasks.delete(taskNumber - 1);
+        int index = toZeroBasedIndex(taskNumber);
+        Task removed = tasks.delete(index);
         storage.save(tasks);
         return ui.formatDeleted(removed, tasks.size());
     }
@@ -206,6 +209,16 @@ public class Axiom {
         tasks.add(task);
         storage.save(tasks);
         return ui.formatTaskAdded(task, tasks.size());
+    }
+
+    /**
+     * Converts a one-based task number from the user into a list index.
+     *
+     * @param taskNumber One-based number shown to the user.
+     * @return Zero-based index into {@link TaskList}.
+     */
+    private int toZeroBasedIndex(int taskNumber) {
+        return taskNumber - 1;
     }
 
     /**
