@@ -43,20 +43,14 @@ public class DateTimeParser {
     public static LocalDateTime parse(String input) throws AxiomException {
         String trimmed = input.trim();
 
-        for (DateTimeFormatter formatter : DATE_TIME_FORMATTERS) {
-            try {
-                return LocalDateTime.parse(trimmed, formatter);
-            } catch (DateTimeParseException e) {
-                // Try the next supported format.
-            }
+        LocalDateTime dateTime = tryParseDateTime(trimmed);
+        if (dateTime != null) {
+            return dateTime;
         }
 
-        for (DateTimeFormatter formatter : DATE_FORMATTERS) {
-            try {
-                return LocalDate.parse(trimmed, formatter).atStartOfDay();
-            } catch (DateTimeParseException e) {
-                // Try the next supported format.
-            }
+        LocalDateTime dateOnly = tryParseDate(trimmed);
+        if (dateOnly != null) {
+            return dateOnly;
         }
 
         throw new AxiomException("Invalid date/time format: '" + trimmed
@@ -93,16 +87,6 @@ public class DateTimeParser {
     }
 
     /**
-     * Returns whether {@code dateTime} has no time-of-day component.
-     *
-     * @param dateTime Date and time to inspect.
-     * @return {@code true} if the time is midnight.
-     */
-    private static boolean isAtStartOfDay(LocalDateTime dateTime) {
-        return dateTime.getHour() == 0 && dateTime.getMinute() == 0;
-    }
-
-    /**
      * Formats a date/time for storage in the data file.
      *
      * @param dateTime Date and time to format.
@@ -110,5 +94,49 @@ public class DateTimeParser {
      */
     public static String formatStored(LocalDateTime dateTime) {
         return dateTime.toString();
+    }
+
+    /**
+     * Returns a date-time parsed with a date-and-time formatter, or {@code null} if none match.
+     *
+     * @param input Trimmed date/time text.
+     * @return The parsed date and time, or {@code null} if the text is date-only or invalid.
+     */
+    private static LocalDateTime tryParseDateTime(String input) {
+        for (DateTimeFormatter formatter : DATE_TIME_FORMATTERS) {
+            try {
+                return LocalDateTime.parse(input, formatter);
+            } catch (DateTimeParseException e) {
+                // Try the next supported format.
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns midnight on a parsed date, or {@code null} if no date formatter matches.
+     *
+     * @param input Trimmed date text.
+     * @return The date at start of day, or {@code null} if the text is not a supported date.
+     */
+    private static LocalDateTime tryParseDate(String input) {
+        for (DateTimeFormatter formatter : DATE_FORMATTERS) {
+            try {
+                return LocalDate.parse(input, formatter).atStartOfDay();
+            } catch (DateTimeParseException e) {
+                // Try the next supported format.
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns whether {@code dateTime} has no time-of-day component.
+     *
+     * @param dateTime Date and time to inspect.
+     * @return {@code true} if the time is midnight.
+     */
+    private static boolean isAtStartOfDay(LocalDateTime dateTime) {
+        return dateTime.getHour() == 0 && dateTime.getMinute() == 0;
     }
 }
